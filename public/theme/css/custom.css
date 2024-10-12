@@ -1,0 +1,12 @@
+table.dataTable td {
+  font-size: 14px;
+}
+
+table.dataTable th {
+  font-size: 14px;
+}
+
+.mandatory::after {
+  content: ' *';
+  color: #d9534f;
+}
