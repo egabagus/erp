@@ -126,31 +126,41 @@
                 },
                 {
                     data: 'date',
-                    name: 'date'
+                    name: 'date',
+                    render: function(data, type, row, meta) {
+                        return moment(data).format('DD-MM-YYYY')
+                    }
                 },
                 {
                     data: 'due_date',
-                    name: 'due_date'
+                    name: 'due_date',
+                    render: function(data, type, row, meta) {
+                        return moment(data).format('DD-MM-YYYY')
+                    }
                 },
                 {
                     data: 'app_manager',
                     name: 'app_manager',
-                    render: function(data) {
+                    render: function(data, type, row, meta) {
                         if (data == 1) {
-                            return `<div class="badge bg-success text-white">Approved</div>`
+                            if (row.proses === 1) {
+                                return `<div class="badge bg-success-light p-2">Approved</div><div class="badge bg-primary-light p-2" style="margin-left:5px;">${row.po.po_number}</div>`
+                            } else {
+                                return `<div class="badge bg-success-light p-2">Approved</div>`
+                            }
                         } else {
-                            return `<div class="badge bg-warning text-white">Menunggu</div>`
+                            return `<div class="badge bg-warning-light p-2">Menunggu</div>`
                         }
                     }
                 },
                 {
                     data: 'status',
                     name: 'status',
-                    render: function(data) {
+                    render: function(data, type, row, meta) {
                         if (data == 1) {
-                            return `<div class="badge bg-success text-white">Aktif</div>`
+                            return `<div class="badge bg-success-light p-2">Aktif</div>`
                         } else {
-                            return `<div class="badge bg-danger text-white">NonAktif</div>`
+                            return `<div class="badge bg-danger p-2">NonAktif</div>`
                         }
                     }
                 },

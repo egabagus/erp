@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Barang;
 use App\Models\Customer;
+use App\Models\HeaderPO;
 use App\Models\HeaderRequestOrder;
 use App\Models\Supplier;
 
@@ -86,7 +87,30 @@ class CreateItemNumber
 
         if ($lastRecord) {
             // Ambil nomor urut terakhir setelah kode dan tahun (misalnya 'REQ2024000005')
-            $lastNumber = (int) substr($lastRecord->kode_cust, strlen($code));
+            $lastNumber = (int) substr($lastRecord->req_number, strlen($code));
+            // Tambah 1
+            $newNumber = $lastNumber + 1;
+        } else {
+            // Jika belum ada data, mulai dari 1
+            $newNumber = 1;
+        }
+
+        // Format angka dengan leading zero (pad dengan 6 digit)
+        $itemNumber = $code . str_pad($newNumber, 6, '0', STR_PAD_LEFT);
+
+        return $itemNumber;
+    }
+
+    public static function generatePONumber()
+    {
+        $lastRecord = HeaderPO::orderBy('po_number', 'desc')
+            ->first();
+
+        $code = 'PO' . date('Y'); // Prefix 'REQ' diikuti tahun saat ini
+
+        if ($lastRecord) {
+            // Ambil nomor urut terakhir setelah kode dan tahun (misalnya 'REQ2024000005')
+            $lastNumber = (int) substr($lastRecord->po_number, strlen($code));
             // Tambah 1
             $newNumber = $lastNumber + 1;
         } else {

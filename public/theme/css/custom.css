@@ -10,3 +10,23 @@ table.dataTable th {
   content: ' *';
   color: #d9534f;
 }
+
+.bg-primary-light {
+  background-color: #4e72df2d;
+  color: #4e72df;
+}
+
+.bg-success-light {
+  background-color: #1cc88938 ;
+  color: #0e9c68 ;
+}
+
+.bg-warning-light {
+  background-color: #f6c23e3b ;
+  color: #d59c0d ;
+}
+
+.bg-danger-light {
+  background-color: #e02b1b4e;
+  color: #e02d1b;
+}

@@ -425,6 +425,7 @@
     <script src="{{ asset('build/assets/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('build/assets/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('build/assets/select2/select2.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 </body>
 
 </html>

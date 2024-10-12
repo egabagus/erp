@@ -27,7 +27,7 @@ class RequestOrderController extends Controller
 
     public function data()
     {
-        $data = HeaderRequestOrder::with('detail')->get();
+        $data = HeaderRequestOrder::with('detail', 'po')->get();
 
         return DataTables::of($data)
             ->make(true);

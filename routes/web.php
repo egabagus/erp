@@ -101,6 +101,7 @@ Route::group(['middleware' => ['role:super-admin|admin|purchasing']], function (
         Route::controller(PurchaseOrderController::class)->group(function () {
             Route::get('/purchase-order', 'index');
             Route::get('/purchase-order/create/{req_number}', 'add');
+            Route::post('/purchase-order/store/', 'store');
         });
     });
 });
