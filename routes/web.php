@@ -6,6 +6,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerControoler;
+use App\Http\Controllers\Master\ModulController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RequestOrderController;
 use App\Http\Controllers\RoleController;
@@ -14,7 +15,7 @@ use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', function () {
@@ -35,14 +36,6 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
 
     Route::resource('permissions', PermissionController::class);
     Route::get('permissions/{permissionId}/delete', [PermissionController::class, 'destroy']);
-
-    Route::prefix('roles')->group(function () {
-        Route::resource('/roles', RoleController::class);
-        Route::get('/data', [RoleController::class, 'data']);
-        Route::get('/{roleId}/delete', [RoleController::class, 'destroy']);
-        Route::get('/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
-        Route::put('/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
-    });
 
     Route::prefix('master')->group(function () {
         Route::controller(AdministrationController::class)->group(function () {
@@ -93,6 +86,14 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
             Route::post('/customer/update/{id}', 'update');
             Route::post('/customer/delete/{id}', 'destroy');
         });
+
+        Route::prefix('roles')->group(function () {
+            Route::resource('/', RoleController::class);
+            Route::get('/data', [RoleController::class, 'data']);
+            Route::get('/{roleId}/delete', [RoleController::class, 'destroy']);
+            Route::get('/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
+            Route::put('/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
+        });
     });
 });
 
@@ -102,6 +103,13 @@ Route::group(['middleware' => ['role:super-admin|admin|purchasing']], function (
             Route::get('/purchase-order', 'index');
             Route::get('/purchase-order/create/{req_number}', 'add');
             Route::post('/purchase-order/store/', 'store');
+            Route::get('/purchase-order/data', 'data');
+        });
+
+        Route::prefix('master')->group(function () {
+            Route::controller(BarangController::class)->group(function () {
+                Route::get('/barang/{codeitem}', 'show');
+            });
         });
     });
 });
@@ -119,6 +127,17 @@ Route::group(['middleware' => ['role:super-admin|production']], function () {
         });
     });
 });
+
+Route::group(['middleware' => ['role:super-admin']], function () {
+    Route::prefix('master')->group(function () {
+        Route::prefix('modul')->group(function () {
+            Route::controller(ModulController::class)->group(function () {
+                Route::get('/', 'index');
+            });
+        });
+    });
+});
+
 
 require __DIR__ . '/auth.php';
 include __DIR__ . '/pdf.php';

@@ -13,8 +13,13 @@ class HeaderPO extends Model
     public $timestamps = true;
     protected $guarded = [];
 
-    // public function detail(): HasMany
-    // {
-    //     return $this->hasMany(DetailPO::class, 'po_number', 'po_number');
-    // }
+    public function detail(): HasMany
+    {
+        return $this->hasMany(DetailPO::class, 'po_number', 'po_number');
+    }
+
+    public function vendor()
+    {
+        return $this->belongsTo(Supplier::class, 'vendor_code', 'kode_supp');
+    }
 }

@@ -34,7 +34,7 @@
                                         <label for="" class="col-md-3 mandatory col-form-label">
                                             Req Date</label>
                                         <input type="date" name="date" class="form-control col-md-9"
-                                            id="req_date" readonly />
+                                            id="req_date" readonly value="<?= date('Y-m-d') ?>" />
                                     </div>
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">Due Date</label>
@@ -46,9 +46,9 @@
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">Req By</label>
                                         <input type="text" name="req_by" id="req_by"
-                                            class="form-control col-md-9" readonly />
+                                            class="form-control col-md-9" readonly value="{{ $email }}" />
                                     </div>
-                                    <div class="mb-3 row">
+                                    <div class="mb-3 row" id="ApproveInput">
                                         <label for="" class="col-md-3 mandatory col-form-label">Approved
                                             By</label>
                                         <input type="text" name="approve_by" id="approve_by"
@@ -101,6 +101,7 @@
                                     id="addRequestTable">
                                     <thead class="bg-primary text-white text-uppercase text-center">
                                         <tr>
+                                            <th width="30px"></th>
                                             <th width="250px">Item</th>
                                             <th width="100px">Unit</th>
                                             <th width="100px">Qty</th>
@@ -116,6 +117,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <div class="btn btn-success" onclick="addRow()"><i class="fas fa-plus"></i></div>
                             <div class="row">
                                 <div class="col-7"></div>
                                 <div class="col-5">
@@ -162,7 +164,13 @@
     // console.log(req_number)
 
     $(document).ready(function() {
-        getRequestOrder()
+        if (req_number != 0) {
+            getRequestOrder()
+        } else {
+            $('#due_date').prop('readonly', false)
+            $('#req_date').prop('readonly', false)
+            $('#ApproveInput').addClass('d-none')
+        }
         initVendor()
     })
 
@@ -182,6 +190,7 @@
                     itemRow++
                     $('#itemRequestList').append(
                         `<tr id="item_row_${itemRow}">
+                            <td></td>
                             <td>
                                 <input type="text" name="item[]" id="item_${itemRow}" value="${value.product.nama_barang}" readonly class="form-control">
                                 <input type="hidden" name="code[]" id="code_${itemRow}" value="${value.product.kode_barang}" readonly class="form-control">
@@ -260,29 +269,38 @@
     }
 
     function addRow() {
-        $('#itemRequestList').append(
-            /* html */
-            `<tr id="item_row_${itemRow}">
-                <td><button class="btn btn-md btn-danger" onclick="deleteRow(${itemRow})" type="button"><i
-                                class="fas fa-trash"></i></button></td>
-                <td><select name="item_code[]" class="form-control item_code"></select>
-                </td>
-                <td><input type="number" name="qty[]" id="qty"
-                        class="form-control">
-                </td>
-            </tr>`
-        );
-
         itemRow++
+        $('#itemRequestList').append(
+            `<tr id="item_row_${itemRow}">
+                <td>
+                    <div class="btn btn-danger" onclick="deleteRow(${itemRow})"><i class="fas fa-minus"></i></div></td>
+                <td>
+                    <select class="form-control item_select" name="item[]" id="item_${itemRow}" style="width:100%" onchange="handleProduct(${itemRow})">
+                    </select>
+                    <input type="hidden" name="code[]" id="code_${itemRow}" readonly class="form-control">
+                </td>
+                <td><input type="text" name="unit[]" id="unit_${itemRow}" readonly class="form-control"></td>
+                <td><input type="number" name="qty[]" id="qty_${itemRow}" class="form-control" onkeyup="totaline(${itemRow})"></td>
+                <td><input type="text" name="price[]" id="price_${itemRow}" readonly class="form-control"></td>
+                <td><input type="text" name="jumlah[]" id="jumlah_${itemRow}" readonly class="form-control"></td>
+                <td><input style="margin-left:0px;transform: scale(1.5);" type="checkbox" name="ppn[]" id="ppn_${itemRow}" class="form-check-input" onclick="totaline(${itemRow})"></td>
+                <td><input type="text" name="ppnrp[]" id="ppnrp_${itemRow}" class="form-control" onchange="totalppn(${itemRow})" value="0" readonly></td>
+                <td><input type="number" name="disc[]" id="disc_${itemRow}" class="form-control" onkeyup="totaline(${itemRow})" value="0"></td>
+                <td><input type="text" name="total[]" id="total_${itemRow}" class="form-control" readonly></td>
+            </tr>`
+        )
+
         initItem()
+        sumTotal()
     }
 
     function deleteRow(row) {
         $(`#item_row_${row}`).remove();
+        sumTotal()
     }
 
     function initItem() {
-        $('.item_code').select2({
+        $('.item_select').select2({
             placeholder: 'Select Item',
             allowClear: true,
             theme: 'bootstrap',
@@ -309,9 +327,37 @@
         });
     }
 
+    function handleProduct(row) {
+        var codeItem = $(`#item_${row}`).val()
+        $.ajax({
+            url: `{{ url('purchasing/master/barang') }}/${codeItem}`,
+            method: 'GET',
+            dataType: 'json',
+            beforeSend: function() {
+                showLoading();
+            },
+            success: (data) => {
+                var value = data.data
+                if (value) {
+                    $(`#unit_${row}`).val(value.satuan)
+                    $(`#price_${row}`).val(value.harga)
+                    $(`#code_${row}`).val(value.kode_barang)
+                }
+            },
+            error: function(error) {
+                hideLoading();
+                handleErrorAjax(error)
+            },
+            complete: function() {
+                hideLoading();
+            },
+        })
+    }
+
     function save() {
         var form = document.getElementById('formAddPo')
         var formData = new FormData(form)
+        console.log(formData)
         var subtotal = parseInt($('#rSubtotal').text().replace('Rp.', '').replace(/\./g, '').trim(), 10);
         var ppn = parseInt($('#rPPN').text().replace('Rp.', '').replace(/\./g, '').trim(), 10);
         var disc = parseInt($('#rDisc').text().replace('Rp.', '').replace(/\./g, '').trim(), 10);
@@ -349,6 +395,7 @@
     }
 
     function totaline(itemRow) {
+        sumTotal();
         var priceunit = $(`#price_${itemRow}`).val()
         var qty = $(`#qty_${itemRow}`).val()
         var disc = $(`#disc_${itemRow}`).val()
@@ -361,16 +408,16 @@
         if ($(`#ppn_${itemRow}`).is(":checked")) {
             var ppnrp = total * 12 / 100
             $(`#ppnrp_${itemRow}`).val(ppnrp)
+            sumTotal();
         } else {
-            // console.log('ora')
             var ppnrp = 0;
-            $(`#ppnrp_${itemRow}`).val(ppnrp)
+            $(`#ppnrp_${itemRow}`).val(0)
+            sumTotal();
         }
 
 
         totalline = total + ppnrp
         $(`#total_${itemRow}`).val(totalline)
-
         sumTotal();
     }
 
@@ -384,10 +431,10 @@
 
         for (var i = 1; i < rowCount; i++) {
             var row = table.rows[i];
-            subtotal = Number((row.cells[4].children[0].value).replace(/[^0-9\.]+/g, ""));
-            diskon = Number((row.cells[7].children[0].value).replace(/[^0-9\.]+/g, ""));
-            ppn = Number((row.cells[6].children[0].value).replace(/[^0-9\.]+/g, ""));
-            jumlah = Number((row.cells[8].children[0].value).replace(/[^0-9\.]+/g, ""));
+            subtotal = Number((row.cells[5].children[0].value).replace(/[^0-9\.]+/g, ""));
+            diskon = Number((row.cells[8].children[0].value).replace(/[^0-9\.]+/g, ""));
+            ppn = Number((row.cells[7].children[0].value).replace(/[^0-9\.]+/g, ""));
+            jumlah = Number((row.cells[9].children[0].value).replace(/[^0-9\.]+/g, ""));
             tsubtotal += subtotal;
             tdiskon += diskon;
             tppn += ppn;

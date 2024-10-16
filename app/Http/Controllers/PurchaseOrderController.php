@@ -7,7 +7,9 @@ use App\Models\DetailPO;
 use App\Models\HeaderPO;
 use App\Models\HeaderRequestOrder;
 use App\Services\CreateItemNumber;
+use App\Services\PdfService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
@@ -27,7 +29,16 @@ class PurchaseOrderController extends Controller
 
     public function add($req_number)
     {
-        return view('purchasing.purchase-order.create', compact('req_number'));
+        $email = Auth::user()->email;
+        return view('purchasing.purchase-order.create', compact('req_number', 'email'));
+    }
+
+    public function data()
+    {
+        $data = HeaderPO::with('detail', 'vendor')->get();
+
+        return DataTables::of($data)
+            ->make(true);
     }
 
     public function store(Request $request)
@@ -77,5 +88,43 @@ class PurchaseOrderController extends Controller
             $detail->total           = $request->input('total')[$key];
             $detail->save();
         }
+    }
+
+    public function pdf($ponumber)
+    {
+        $data = HeaderPO::with('detail', 'vendor')->where('po_number', $ponumber)->first();
+        $pdf = new PdfService();
+
+        // dd($data);
+        // Tambahkan halaman
+        $pdf->AddPage();
+
+        // Set header
+        $pdf->setHeader();
+
+        // Set font untuk konten
+        $pdf->SetFont('Helvetica', 'B', 16);
+
+        // Tambahkan teks konten
+        $pdf->Cell(0, 10, 'PURCHASE ORDER', 0, 0, 'C');
+        $pdf->Ln(8);
+        $pdf->SetFont('Helvetica', '', 12);
+        $pdf->Cell(0, 10, $data->po_number, 0, 0, 'C');
+
+        $pdf->SetFontSize(8);
+        $pdf->Ln(15);
+
+        $data = array(
+            array('PO Date', ': ' . $data->po_date, 'Vendor', ': ' . $data->vendor_code),
+        );
+
+        // Lebar kolom dinamis (misalnya)
+        $widths = array(20, 70, 20, 70); // Sesuaikan lebar kolom sesuai kebutuhan
+        // Buat tabel dengan lebar kolom dinamis
+        $pdf->bodyTable($data, $widths, 5, 0);
+
+        $pdf->setDocumentTitle('Judul PDF Anda');
+
+        return $pdf->outputPdf('document.pdf');
     }
 }

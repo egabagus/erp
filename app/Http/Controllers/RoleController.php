@@ -8,6 +8,7 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Yajra\DataTables\Facades\DataTables;
 
 class RoleController extends Controller implements HasMiddleware
 {
@@ -32,14 +33,13 @@ class RoleController extends Controller implements HasMiddleware
 
     public function index()
     {
-        $roles = Role::get();
-        return view('role-permission.role.index', ['roles' => $roles]);
+        return view('role-permission.role.index');
     }
 
     public function data()
     {
         $roles = Role::get();
-        return $roles;
+        return DataTables::of($roles)->make(true);
     }
 
     public function create()

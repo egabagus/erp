@@ -19,7 +19,7 @@
                         </h4>
                     </div>
                     <div class="card-body">
-                        <form action="{{ url('roles') }}" method="POST">
+                        <form action="{{ url('roles/roles') }}" method="POST">
                             @csrf
 
                             <div class="mb-3">

@@ -34,6 +34,22 @@ class BarangController extends Controller
             ->make(true);
     }
 
+    public function show($codeitem)
+    {
+        try {
+            $data = Barang::where('kode_barang', $codeitem)->first();
+            return response()->json([
+                'status' => 'success',
+                'data' => $data,
+            ], 201);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function store(BarangRequest $request)
     {
         DB::beginTransaction();

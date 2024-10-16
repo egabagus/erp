@@ -83,7 +83,7 @@ class CreateItemNumber
         $lastRecord = HeaderRequestOrder::orderBy('req_number', 'desc')
             ->first();
 
-        $code = 'REQ' . date('Y'); // Prefix 'REQ' diikuti tahun saat ini
+        $code = 'REQ' . date('Y') . date('m'); // Prefix 'REQ' diikuti tahun saat ini
 
         if ($lastRecord) {
             // Ambil nomor urut terakhir setelah kode dan tahun (misalnya 'REQ2024000005')
@@ -106,7 +106,7 @@ class CreateItemNumber
         $lastRecord = HeaderPO::orderBy('po_number', 'desc')
             ->first();
 
-        $code = 'PO' . date('Y'); // Prefix 'REQ' diikuti tahun saat ini
+        $code = 'PO' . date('Y') . date('m'); // Prefix 'REQ' diikuti tahun saat ini
 
         if ($lastRecord) {
             // Ambil nomor urut terakhir setelah kode dan tahun (misalnya 'REQ2024000005')
