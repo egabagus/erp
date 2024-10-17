@@ -32,7 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::group(['middleware' => ['role:super-admin|admin']], function () {
+Route::group(['middleware' => ['auth']], function () {
 
     Route::resource('permissions', PermissionController::class);
     Route::get('permissions/{permissionId}/delete', [PermissionController::class, 'destroy']);
@@ -95,15 +95,15 @@ Route::group(['middleware' => ['role:super-admin|admin']], function () {
             Route::put('/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
         });
     });
-});
 
-Route::group(['middleware' => ['role:super-admin|admin|purchasing']], function () {
     Route::prefix('purchasing')->group(function () {
         Route::controller(PurchaseOrderController::class)->group(function () {
             Route::get('/purchase-order', 'index');
             Route::get('/purchase-order/create/{req_number}', 'add');
             Route::post('/purchase-order/store/', 'store');
             Route::get('/purchase-order/data', 'data');
+            Route::post('/purchase-order/cancle-approve/{type}/{ponumber}', 'cancleApprove');
+            Route::post('/purchase-order/approve/{type}/{ponumber}', 'approve');
         });
 
         Route::prefix('master')->group(function () {
@@ -112,9 +112,7 @@ Route::group(['middleware' => ['role:super-admin|admin|purchasing']], function (
             });
         });
     });
-});
 
-Route::group(['middleware' => ['role:super-admin|production']], function () {
     Route::prefix('production')->group(function () {
         Route::controller(RequestOrderController::class)->group(function () {
             Route::get('/request-order', 'index');
@@ -126,9 +124,7 @@ Route::group(['middleware' => ['role:super-admin|production']], function () {
             Route::post('/request-order/cancel-approve/{req_number}', 'cancelApprove');
         });
     });
-});
 
-Route::group(['middleware' => ['role:super-admin']], function () {
     Route::prefix('master')->group(function () {
         Route::prefix('modul')->group(function () {
             Route::controller(ModulController::class)->group(function () {

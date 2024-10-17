@@ -25,11 +25,9 @@
 
                 <div class="card mt-3">
                     <div class="card-header">
-                        @can('create user')
-                            <div class="d-flex justify-content-between">
-                                <b>Data Request Purchase</b>
-                            </div>
-                        @endcan
+                        <div class="d-flex justify-content-between">
+                            <b>Data Request Purchase</b>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -54,13 +52,11 @@
 
                 <div class="card mt-5">
                     <div class="card-header">
-                        @can('create user')
-                            <div class="d-flex justify-content-between">
-                                <b>Data Purchase Order</b>
-                                <a href="{{ url('purchasing/purchase-order/create/0') }}" target="_blank"
-                                    class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Buat PO</a>
-                            </div>
-                        @endcan
+                        <div class="d-flex justify-content-between">
+                            <b>Data Purchase Order</b>
+                            <a href="{{ url('purchasing/purchase-order/create/0') }}" target="_blank"
+                                class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> Buat PO</a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
@@ -190,6 +186,8 @@
                     data: 'id',
                     name: 'id',
                     render: function(data, type, row, meta) {
+                        var role = {{ auth()->user()->role_id }}
+                        console.log(role)
                         if (row.app_manager == 0) {
                             return ``
                         } else if (row.app_manager == 1) {
@@ -198,9 +196,13 @@
                                     <a class="btn btn-sm btn-primary" href="${`{{ url('purchasing/purchase-order/create') }}/${row.req_number}`}" target="_blank"><i class="fas fa-eye"></i></a>
                                     </div>`
                             } else {
-                                return `<div class="d-flex justify-content-center" style="gap: 5px;">
-                                    <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/create') }}/${row.req_number}`}" target="_blank">Proses</a>
-                                    </div>`
+                                if (role === 5) {
+                                    return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                                        <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/create') }}/${row.req_number}`}" target="_blank">Proses</a>
+                                        </div>`
+                                } else {
+                                    return ''
+                                }
                             }
                         }
                     }
@@ -320,20 +322,35 @@
                     data: 'po_number',
                     name: 'po_number',
                     render: function(data, type, row, meta) {
-                        if (row.app_operational === 0 && row.app_finance === 1) {
-                            return `<div class="d-flex justify-content-center" style="gap: 5px;">
-                                    <div class="btn btn-primary btn-sm"><i class="fas fa-check-circle"></i></div>
+                        var role = {{ auth()->user()->role_id }}
+                        if (role == 6) {
+                            if (row.app_operational === 0) {
+                                return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                                    <div class="btn btn-primary btn-sm" onclick="approvePO('operational', '${data}')"><i class="fas fa-check-circle"></i></div>
                                     <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
                                     </div>`;
-                        } else if (row.app_finance === 0 && row.app_operational === 1) {
-                            return `<div class="d-flex justify-content-center" style="gap: 5px;">
-                                    <div class="btn btn-info btn-sm"><i class="fas fa-check-circle"></i></div>
+                            } else {
+                                return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                                    <div class="btn btn-danger btn-sm" onclick="canclePO('operational', '${data}')"><i class="fas fa-times"></i></div>
                                     <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
                                     </div>`;
-                        } else {
+                            }
+                        } else if (role == 5) {
                             return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                                <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
+                                </div>`;
+                        } else if (role == 7) {
+                            if (row.app_finance === 0) {
+                                return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                                    <div class="btn btn-info btn-sm" onclick="approvePO('finance', '${data}')"><i class="fas fa-check-circle"></i></div>
                                     <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
                                     </div>`;
+                            } else {
+                                return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                                    <div class="btn btn-danger btn-sm" onclick="canclePO('finance', '${data}')"><i class="fas fa-times"></i></div>
+                                    <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
+                                    </div>`;
+                            }
                         }
                     }
                 },
@@ -341,16 +358,16 @@
         });
     }
 
-    function deleteSupplier(id) {
+    function canclePO(type, ponumber) {
         Swal.fire({
-            title: "Yakin untuk menghapus data vendor?",
+            title: "Yakin untuk membatalkan approve PO?",
             showCancelButton: true,
             confirmButtonText: "Yes",
             icon: "question"
         }).then(function(result) {
-            if (result.value) {
+            if (result.isConfirmed) {
                 $.ajax({
-                    url: `{{ url('master/supplier/delete') }}/${id}`,
+                    url: `{{ url('purchasing/purchase-order/cancle-approve') }}/${type}/${ponumber}`,
                     method: 'POST',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -366,7 +383,47 @@
                             type: "success",
                             icon: "success",
                         }).then(function() {
-                            supplierTable.ajax.reload()
+                            poTable.ajax.reload()
+                        })
+                    },
+                    error: function(error) {
+                        hideLoading();
+                        handleErrorAjax(error)
+                    },
+                    complete: function() {
+                        hideLoading();
+                    },
+                })
+            }
+        });
+    }
+
+    function approvePO(type, ponumber) {
+        Swal.fire({
+            title: "Yakin untuk approve PO?",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            icon: "question"
+        }).then(function(result) {
+            if (result.isConfirmed) {
+                $.ajax({
+                    url: `{{ url('purchasing/purchase-order/approve') }}/${type}/${ponumber}`,
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        showLoading();
+                    },
+                    success: (data) => {
+                        Swal.fire({
+                            title: "Berhasil!",
+                            type: "success",
+                            icon: "success",
+                        }).then(function() {
+                            poTable.ajax.reload()
                         })
                     },
                     error: function(error) {

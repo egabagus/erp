@@ -23,14 +23,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         View::composer('layouts.app', function ($view) {
-            $id = auth()->user()->id; // Mengambil roles
-            $roles = User::with('role.modul')->where('id', $id)->first();
-            dd($roles);
-            $menus = Modul::whereHas('roles', function ($query) use ($roles) {
-                $query->whereIn('roles.id', $roles->pluck('id'));
-            })->get();
+            $user = auth()->user(); // Mengambil roles
+            $roles = User::with('role.modul')->where('id', $user->id)->first();
+            // dd($roles);
+            // $menus = $roles->role->modul;
 
-            $view->with('menus', $menus);
+            $view->with('user', $user);
         });
     }
 }

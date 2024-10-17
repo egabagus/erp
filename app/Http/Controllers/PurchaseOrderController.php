@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\CancelApprovePO;
 use App\Http\Requests\PORequest;
 use App\Models\DetailPO;
 use App\Models\HeaderPO;
@@ -87,6 +88,66 @@ class PurchaseOrderController extends Controller
             $detail->taxrp           = $request->input('ppnrp')[$key];
             $detail->total           = $request->input('total')[$key];
             $detail->save();
+        }
+    }
+
+    public function cancleApprove($type, $ponumber)
+    {
+        DB::beginTransaction();
+        try {
+            $data = HeaderPO::where('po_number', $ponumber)->first();
+
+            if ($type == 'operational') {
+                $data->app_operational = 0;
+            } else if ($type == 'finance') {
+                $data->app_finance = 0;
+            }
+
+            $data->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Approve PO Berhasil Dibatalkan!'
+            ], 201);
+        } catch (\Throwable $e) {
+            // dd($e);
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function approve($type, $ponumber)
+    {
+        DB::beginTransaction();
+        try {
+            $data = HeaderPO::where('po_number', $ponumber)->first();
+
+            if ($type == 'operational') {
+                $data->app_operational = 1;
+            } else if ($type == 'finance') {
+                $data->app_finance = 1;
+            }
+
+            $data->save();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'PO Approved!'
+            ], 201);
+        } catch (\Throwable $e) {
+            // dd($e);
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

@@ -48,6 +48,14 @@
             <!-- Divider -->
             <hr class="sidebar-divider my-0">
 
+            {{-- @foreach ($menus as $menu)
+                <li class="nav-item active text-dark">
+                    <a class="nav-link" href="index.html">
+                        <i class="fas fa-fw fa-tachometer-alt"></i>
+                        <span>{{ $menu->text }}</span></a>
+                </li>
+            @endforeach --}}
+
             <!-- Nav Item - Dashboard -->
             <li class="nav-item active text-dark">
                 <a class="nav-link" href="index.html">
@@ -55,8 +63,129 @@
                     <span>Dashboard</span></a>
             </li>
 
+            @if ($user->role_id == 1)
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    MASTER
+                </div>
+
+                <!-- Nav Item - Pages Collapse Menu -->
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                        aria-expanded="true" aria-controls="collapsePages">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>General</span>
+                    </a>
+                    <div id="collapsePages" class="collapse" aria-labelledby="headingPages"
+                        data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ url('/users') }}">User</a>
+                            <a class="collapse-item" href="{{ url('/roles') }}">Role</a>
+                            <a class="collapse-item" href="{{ url('master/administration') }}">Administration</a>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('master/barang') }}">
+                        <i class="fas fa-fw fa-box"></i>
+                        <span>Barang</span></a>
+                </li>
+
+                <!-- Nav Item - Tables -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('master/supplier') }}">
+                        <i class="fas fa-fw fa-table"></i>
+                        <span>Vendor</span></a>
+                </li>
+
+                <!-- Nav Item - Tables -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('master/customer') }}">
+                        <i class="fas fa-fw fa-users"></i>
+                        <span>Customer</span></a>
+                </li>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    PURCHASING
+                </div>
+
+                <!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('purchasing/purchase-order') }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>PO</span></a>
+                </li>
+
+                <!-- Nav Item - Tables -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('master/supplier') }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>BAPB</span></a>
+                </li>
+
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    PRODUCTION
+                </div>
+
+                <!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('production/request-order') }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Request Order</span></a>
+                </li>
+            @elseif ($user->role_id == 4)
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    PRODUCTION
+                </div>
+
+                <!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('production/request-order') }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>Request Order</span></a>
+                </li>
+            @elseif ($user->role_id == 5 || $user->role_id == 6 || $user->role_id == 7)
+                <!-- Divider -->
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    PURCHASING
+                </div>
+
+                <!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('purchasing/purchase-order') }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>PO</span></a>
+                </li>
+
+                <!-- Nav Item - Tables -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('master/supplier') }}">
+                        <i class="fas fa-file-invoice-dollar"></i>
+                        <span>BAPB</span></a>
+                </li>
+            @endif
             <!-- Divider -->
-            <hr class="sidebar-divider">
+            {{-- <hr class="sidebar-divider">
 
             <!-- Heading -->
             <div class="sidebar-heading">
@@ -70,7 +199,8 @@
                     <i class="fas fa-fw fa-folder"></i>
                     <span>General</span>
                 </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+                <div id="collapsePages" class="collapse" aria-labelledby="headingPages"
+                    data-parent="#accordionSidebar">
                     <div class="bg-white py-2 collapse-inner rounded">
                         <a class="collapse-item" href="{{ url('/users') }}">User</a>
                         <a class="collapse-item" href="{{ url('/roles') }}">Role</a>
@@ -135,7 +265,7 @@
                 <a class="nav-link" href="{{ url('production/request-order') }}">
                     <i class="fas fa-file-invoice-dollar"></i>
                     <span>Request Order</span></a>
-            </li>
+            </li> --}}
 
             <!-- Divider -->
             <hr class="sidebar-divider d-none d-md-block">
@@ -340,11 +470,15 @@
                                     Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal"
-                                    data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+
+                                    <x-dropdown-link :href="route('logout')"
+                                        onclick="event.preventDefault();
+                                                this.closest('form').submit();">
+                                        {{ __('Log Out') }}
+                                    </x-dropdown-link>
+                                </form>
                             </div>
                         </li>
 
