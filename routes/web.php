@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdministrationController;
+use App\Http\Controllers\BapbController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PermissionController;
@@ -104,6 +105,13 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/purchase-order/data', 'data');
             Route::post('/purchase-order/cancle-approve/{type}/{ponumber}', 'cancleApprove');
             Route::post('/purchase-order/approve/{type}/{ponumber}', 'approve');
+        });
+
+        Route::controller(BapbController::class)->group(function () {
+            Route::get('/bapb', 'index');
+            Route::get('/bapb/data', 'data');
+            Route::post('/bapb', 'store');
+            Route::get('/bapb/create', 'create');
         });
 
         Route::prefix('master')->group(function () {
