@@ -127,7 +127,7 @@
 
                 <!-- Nav Item - Tables -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('master/supplier') }}">
+                    <a class="nav-link" href="{{ url('purchasing/bapb') }}">
                         <i class="fas fa-file-invoice-dollar"></i>
                         <span>BAPB</span></a>
                 </li>
@@ -179,7 +179,7 @@
 
                 <!-- Nav Item - Tables -->
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url('master/supplier') }}">
+                    <a class="nav-link" href="{{ url('purchasing/bapb') }}">
                         <i class="fas fa-file-invoice-dollar"></i>
                         <span>BAPB</span></a>
                 </li>

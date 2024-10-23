@@ -112,6 +112,10 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/bapb/data', 'data');
             Route::post('/bapb', 'store');
             Route::get('/bapb/create', 'create');
+            Route::get('/bapb/edit/{bapb_number}', 'edit');
+            Route::get('/bapb/show/{bapb_number}', 'show');
+            Route::put('/bapb/{bapb_number}', 'update');
+            Route::delete('/bapb/{bapb_number}', 'destroy');
         });
 
         Route::prefix('master')->group(function () {

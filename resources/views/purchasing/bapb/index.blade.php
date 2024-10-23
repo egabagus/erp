@@ -146,12 +146,57 @@
                         return `<div class="d-flex justify-content-center" style="gap: 5px;">
                                 <button class="btn btn-sm btn-success" onclick="print('${data}')"><i class="fas fa-print"></i></button>
                                 <a class="btn btn-sm btn-warning" href="{{ env('APP_URL') }}/purchasing/bapb/edit/${data}" target="_blank"><i class="fas fa-pen"></i></a>
-                                <button class="btn btn-sm btn-danger" id="btnDelete"><i class="fas fa-trash"></i></button>
+                                <button class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteTTB('${data}')"><i class="fas fa-trash"></i></button>
                                 </div>`
                     }
                 },
             ],
         });
+    }
+
+    function deleteTTB(bapb_number) {
+        Swal.fire({
+            title: "Yakin untuk menghapus data?",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            icon: "question"
+        }).then(function(result) {
+            if (result.value) {
+                var formData = new FormData()
+                formData.append('_method', 'DELETE'); // Spoofing method untuk Laravel
+                formData.append('_token', $('meta[name="csrf-token"]').attr('content'));
+
+                $.ajax({
+                    url: `{{ url('purchasing/bapb') }}/${bapb_number}`,
+                    data: formData,
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    beforeSend: function() {
+                        showLoading();
+                    },
+                    success: (data) => {
+                        Swal.fire({
+                            title: "Berhasil!",
+                            html: data.message,
+                            type: "success",
+                            icon: "success",
+                        })
+                    },
+                    error: function(error) {
+                        hideLoading();
+                        handleErrorAjax(error)
+                    },
+                    complete: function() {
+                        hideLoading();
+                    },
+                })
+            }
+        })
     }
 </script>
 @include('master.supplier.create')
