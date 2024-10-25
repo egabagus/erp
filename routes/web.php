@@ -12,6 +12,7 @@ use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RequestOrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\SupplierController;
+use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -134,6 +135,13 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/request-order/store', 'store');
             Route::post('/request-order/approve/{req_number}', 'approve');
             Route::post('/request-order/cancel-approve/{req_number}', 'cancelApprove');
+        });
+    });
+
+    Route::prefix('marketing')->group(function () {
+        Route::controller(TransactionHistoryController::class)->group(function () {
+            Route::get('/history-transaction', 'index');
+            Route::get('/history-transaction/data', 'data');
         });
     });
 

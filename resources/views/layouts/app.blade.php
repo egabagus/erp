@@ -146,6 +146,27 @@
                         <i class="fas fa-file-invoice-dollar"></i>
                         <span>Request Order</span></a>
                 </li>
+
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    MARKETING
+                </div>
+
+                <!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('marketing/transaction') }}">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Transaction</span></a>
+                </li>
+
+                <!-- Nav Item - Charts -->
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('marketing/history-transaction') }}">
+                        <i class="fas fa-money-check"></i>
+                        <span>Transaction History</span></a>
+                </li>
             @elseif ($user->role_id == 4)
                 <!-- Divider -->
                 <hr class="sidebar-divider">
