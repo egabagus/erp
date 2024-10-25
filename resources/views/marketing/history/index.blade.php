@@ -27,15 +27,16 @@
                     <div class="card-header">
                         <div class="d-flex flex-column align-items-end">
                             <a href="{{ url('production/request-order/create') }}" class="btn btn-primary btn-sm"><i
-                                    class="fas fa-plus"></i> Export Data</a>
+                                    class="fas fa-file-excel"></i> Export Excel</a>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" width="100%" cellspacing="0" id="table">
+                        <div style="display: block; overflow-x: scroll; white-space: nowrap;">
+                            <table class="table table-bordered" id="table">
                                 <thead class="bg-primary text-white text-uppercase">
                                     <tr>
                                         <th>No</th>
+                                        <th>File</th>
                                         <th>Transaction Number</th>
                                         <th>Date</th>
                                         <th>PO Number</th>
@@ -57,7 +58,50 @@
     </div>
 
 </x-app-layout>
-
+<div class="modal fade" id="fileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="card-header">
+                <h4>File Invoice</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <button class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
+                            <i class="fas fa-file-alt" style="font-size: 30px;"></i>
+                            <span class="font-weight-bold mt-1">Proforma Invoice</span> <!-- Text -->
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
+                            <i class="fas fa-file-alt" style="font-size: 30px;"></i>
+                            <span class="font-weight-bold mt-1">Invoice</span> <!-- Text -->
+                        </button>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-6">
+                        <button class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
+                            <i class="fas fa-tag" style="font-size: 30px;"></i>
+                            <span class="font-weight-bold mt-1">Shipping Marks</span> <!-- Text -->
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
+                            <i class="fas fa-clipboard-list" style="font-size: 30px;"></i>
+                            <span class="font-weight-bold mt-1">Packing List</span> <!-- Text -->
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="d-flex flex-column align-items-end">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     $(function() {
         loadData();
@@ -83,12 +127,13 @@
                 complete: function() {
                     hideLoading();
                 },
-                error: function() {
+                error: function(error) {
+                    handleErrorAjax(error)
                     hideLoading();
                 }
             },
             order: [
-                [1, 'asc']
+                [2, 'desc']
             ],
             columns: [{
                     orderable: false,
@@ -99,40 +144,45 @@
                     },
                 },
                 {
-                    data: 'req_number',
-                    name: 'req_number'
+                    data: 'no_transaksi',
+                    render: function(data, type, row, meta) {
+                        return `
+                            <div class="d-flex justify-content-center" style="gap: 5px;">
+                                <button class="btn btn-sm btn-primary" onclick="fileShow('${data}')"><i class="fas fa-file-alt"></i></button>
+                            </div>
+                        `
+                    }
                 },
                 {
-                    data: 'req_by',
-                    name: 'req_by'
+                    data: 'no_transaksi',
+                    name: 'no_transaksi'
                 },
                 {
                     data: 'date',
                     name: 'date',
                     render: function(data, type, row, meta) {
-                        return moment(data).format('DD-MM-YYYY')
+                        return moment(data).format('DD-MM-YYYY h:i:s')
                     }
                 },
                 {
-                    data: 'due_date',
-                    name: 'due_date',
+                    data: 'po_number',
+                    name: 'po_number',
                     render: function(data, type, row, meta) {
-                        return moment(data).format('DD-MM-YYYY')
+                        return data ?? '-'
                     }
                 },
                 {
-                    data: 'app_manager',
-                    name: 'app_manager',
+                    data: 'customer',
+                    name: 'customer',
                     render: function(data, type, row, meta) {
-                        if (data == 1) {
-                            if (row.proses === 1) {
-                                return `<div class="badge bg-success-light p-2">Approved</div><div class="badge bg-primary-light p-2" style="margin-left:5px;">${row.po.po_number}</div>`
-                            } else {
-                                return `<div class="badge bg-success-light p-2">Approved</div>`
-                            }
-                        } else {
-                            return `<div class="badge bg-warning-light p-2">Menunggu</div>`
-                        }
+                        return data.kode_cust + ' - ' + data.nama_cust
+                    }
+                },
+                {
+                    data: 'total',
+                    name: 'total',
+                    render: function(data, type, row, meta) {
+                        return formatRupiah(data, 'Rp. ')
                     }
                 },
                 {
@@ -147,26 +197,21 @@
                     }
                 },
                 {
-                    data: 'id',
-                    name: 'id',
+                    data: 'no_transaksi',
                     render: function(data, type, row, meta) {
-                        if (row.app_manager == 0) {
-                            return `<div class="d-flex justify-content-center" style="gap: 5px;">
-                                <button class="btn btn-sm btn-primary" onclick="approve('${row.req_number}')"><i class="fas fa-check-circle"></i></button>
-                                <button class="btn btn-sm btn-success" onclick="print('${row.req_number}')"><i class="fas fa-print"></i></button>
-                                <button class="btn btn-sm btn-warning" id="btnEditVendor"><i class="fas fa-pen"></i></button>
-                                <button class="btn btn-sm btn-danger" id="btnDeleteVendor"><i class="fas fa-trash"></i></button>
-                                </div>`
-                        } else if (row.app_manager == 1) {
-                            return `<div class="d-flex justify-content-center" style="gap: 5px;">
-                                <button class="btn btn-sm btn-danger" onclick="cancel('${row.req_number}')"><i class="fas fa-ban"></i></button>
-                                <button class="btn btn-sm btn-success" onclick="print('${row.req_number}')"><i class="fas fa-print"></i></button>
-                                </div>`
-                        }
+                        return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                            <button class="btn btn-sm btn-danger" onclick="cancel('${data}')"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-warning" onclick="cancel('${data}')"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-sm btn-success" onclick="print('${data}')"><i class="fas fa-print"></i></button>
+                            </div>`
                     }
                 },
             ],
         });
+    }
+
+    function fileShow(number) {
+        $('#fileModal').modal('show')
     }
 
     function deleteSupplier(id) {

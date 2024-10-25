@@ -34,9 +34,14 @@ class PurchaseOrderController extends Controller
         return view('purchasing.purchase-order.create', compact('req_number', 'email'));
     }
 
-    public function data()
+    public function data(Request $request)
     {
-        $data = HeaderPO::with('detail', 'vendor')->get();
+        $data = HeaderPO::with('detail', 'vendor')
+            ->when($request->look, function ($q) use ($request) {
+                return $q->where('po_number', 'LIKE', "%{$request->look}%")
+                    ->orWhere('po_date', 'LIKE', "%{$request->look}%");
+            })
+            ->get();
 
         return DataTables::of($data)
             ->make(true);

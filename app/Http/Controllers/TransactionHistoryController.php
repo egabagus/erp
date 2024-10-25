@@ -15,7 +15,7 @@ class TransactionHistoryController extends Controller
 
     public static function data()
     {
-        $data = HeaderTransaction::get();
+        $data = HeaderTransaction::with('customer')->get();
         return DataTables::of($data)
             ->make(true);
     }
