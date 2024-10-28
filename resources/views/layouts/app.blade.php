@@ -154,6 +154,23 @@
                     MARKETING
                 </div>
 
+                <!-- Nav Item - Pages Collapse Menu -->
+                {{-- <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages2"
+                        aria-expanded="true" aria-controls="collapsePages2">
+                        <i class="fas fa-money-check-alt"></i>
+                        <span>Invoice</span>
+                    </a>
+                    <div id="collapsePages2" class="collapse" aria-labelledby="headingPages"
+                        data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="{{ url('marketing/proforma-invoice') }}">Proforma
+                                Invoice</a>
+                            <a class="collapse-item" href="{{ url('marketing/transaction') }}">Commercial Invoice</a>
+                        </div>
+                    </div>
+                </li> --}}
+
                 <!-- Nav Item - Charts -->
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url('marketing/transaction') }}">

@@ -2,7 +2,7 @@
 
     <x-slot name="header">
         <h5 class="font-weight-bold text-xl text-gray-800 leading-tight">
-            {{ __('Create Commercial Invoice') }}
+            {{ __('Create Proforma Invoice') }}
         </h5>
     </x-slot>
 
@@ -11,7 +11,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item"><a href="#">Marketing</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Commercial Invoice</li>
+            <li class="breadcrumb-item active" aria-current="page">Create Proforma Invoice</li>
         </ol>
     </nav>
 
@@ -23,7 +23,7 @@
                         <form id="formTransaction">
                             @csrf
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-6" style="padding-right:25px;">
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">
                                             Date</label>
@@ -31,29 +31,53 @@
                                             value="<?= date('Y-m-d h:i:s') ?>" />
                                     </div>
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 col-form-label">
-                                            PO</label>
-                                        <select name="po" id="po" class="form-control col-md-9"></select>
+                                        <label for="" class="col-md-3 mandatory col-form-label">
+                                            Ship Date</label>
+                                        <input type="date" name="date" class="form-control col-md-9"
+                                            value="<?= date('Y-m-d') ?>" />
                                     </div>
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">
                                             Customer</label>
                                         <select name="customer" id="customer" class="form-control col-md-9"></select>
                                     </div>
+                                    <div class="mb-3 row">
+                                        <label for="" class="col-md-3 mandatory col-form-label">
+                                            Freight Type</label>
+                                        <select name="freight_type" id="freight_type" class="form-control col-md-9">
+                                            <option value="" selected disabled>Select Type</option>
+                                            <option value="Sea Freight">Sea Freight</option>
+                                            <option value="Air Freight">Air Freight</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3 row">
+                                        <label for="" class="col-md-3 mandatory col-form-label">
+                                            Origin Country</label>
+                                        <input type="origin_country" name="origin_country" class="form-control col-md-9"
+                                            value="Indonesia" />
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6" style="padding-left:25px;">
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">User</label>
                                         <input type="text" name="req_by" value="{{ Auth::user()->email }}"
                                             class="form-control col-md-9" readonly />
                                     </div>
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 col-form-label">Note</label>
-                                        <textarea name="note" id="note" rows="2" class="form-control col-md-9"></textarea>
+                                        <label for="" class="col-md-3 mandatory col-form-label">
+                                            Port of Embarkation</label>
+                                        <input type="port_embarkation" name="port_embarkation"
+                                            class="form-control col-md-9" />
                                     </div>
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 col-form-label">Payment Note</label>
-                                        <textarea name="payment_note" id="payment_note" rows="3" class="form-control col-md-9"></textarea>
+                                        <label for="" class="col-md-3 mandatory col-form-label">
+                                            Port of Discharge</label>
+                                        <input type="port_discharge" name="port_discharge"
+                                            class="form-control col-md-9" />
+                                    </div>
+                                    <div class="mb-3 row">
+                                        <label for="" class="col-md-3 col-form-label">Terms</label>
+                                        <textarea name="terms" id="terms" rows="2" class="form-control col-md-9"></textarea>
                                     </div>
                                 </div>
                             </div>
@@ -212,32 +236,6 @@
             },
         })
     }
-
-    $(`#po`).select2({
-        placeholder: 'Select PO',
-        theme: 'bootstrap',
-        allowClear: true,
-        ajax: {
-            delay: 750,
-            url: `{{ url('purchasing/purchase-order/data') }}`,
-            data: function(params) {
-                var query = {
-                    look: params.term
-                }
-                return query;
-            },
-            processResults: function(data) {
-                return {
-                    results: $.map(data.data, function(item) {
-                        return {
-                            text: `${item.po_number} | ${moment(item.po_date).format('D-M-Y')}`,
-                            id: item.po_number
-                        }
-                    })
-                }
-            }
-        }
-    })
 
     $(`#customer`).select2({
         placeholder: 'Select Customer',

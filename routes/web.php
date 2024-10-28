@@ -8,6 +8,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerControoler;
 use App\Http\Controllers\Master\ModulController;
+use App\Http\Controllers\ProformaInvoiceController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RequestOrderController;
 use App\Http\Controllers\RoleController;
@@ -148,6 +149,10 @@ Route::group(['middleware' => ['auth']], function () {
         Route::controller(TransactionController::class)->group(function () {
             Route::get('/transaction', 'index');
             Route::post('/transaction', 'store');
+        });
+
+        Route::controller(ProformaInvoiceController::class)->group(function () {
+            Route::get('/proforma-invoice', 'index');
         });
     });
 
