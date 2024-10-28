@@ -2,7 +2,7 @@
 
     <x-slot name="header">
         <h5 class="font-weight-bold text-xl text-gray-800 leading-tight">
-            {{ __('Create Commercial Invoice') }}
+            {{ __('Create Invoice') }}
         </h5>
     </x-slot>
 
@@ -11,7 +11,7 @@
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item"><a href="#">Marketing</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create Commercial Invoice</li>
+            <li class="breadcrumb-item active" aria-current="page">Create Invoice</li>
         </ol>
     </nav>
 
@@ -23,43 +23,97 @@
                         <form id="formTransaction">
                             @csrf
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-md-6" style="padding-right: 30px;">
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 mandatory col-form-label">
+                                        <label for="" class="col-md-4 mandatory col-form-label">
                                             Date</label>
-                                        <input type="datetime-local" name="date" class="form-control col-md-9"
+                                        <input type="datetime-local" name="date" class="form-control col-md-8"
                                             value="<?= date('Y-m-d h:i:s') ?>" />
                                     </div>
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 col-form-label">
+                                        <label for="" class="col-md-4 col-form-label">
                                             PO</label>
-                                        <select name="po" id="po" class="form-control col-md-9"></select>
+                                        <select name="po" id="po" class="form-control col-md-8"></select>
                                     </div>
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 mandatory col-form-label">
+                                        <label for="" class="col-md-4 mandatory col-form-label">
                                             Customer</label>
-                                        <select name="customer" id="customer" class="form-control col-md-9"></select>
+                                        <select name="customer" id="customer" class="form-control col-md-8"></select>
+                                    </div>
+                                    <div class="mb-3 row">
+                                        <label for="" class="col-md-4 col-form-label mandatory">Payment
+                                            Status</label>
+                                        <select name="payment_status" id="payment_status" class="form-control col-md-8">
+                                            <option value="" selected disabled>Select Payment Status</option>
+                                            <option value="0">Unpaid</option>
+                                            <option value="1">Paid</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-6" style="padding-left: 30px;">
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 mandatory col-form-label">User</label>
+                                        <label for="" class="col-md-4 mandatory col-form-label">User</label>
                                         <input type="text" name="req_by" value="{{ Auth::user()->email }}"
-                                            class="form-control col-md-9" readonly />
+                                            class="form-control col-md-8" readonly />
                                     </div>
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 col-form-label">Note</label>
-                                        <textarea name="note" id="note" rows="2" class="form-control col-md-9"></textarea>
+                                        <label for="" class="col-md-4 col-form-label">Note</label>
+                                        <textarea name="note" id="note" rows="2" class="form-control col-md-8"></textarea>
                                     </div>
                                     <div class="mb-3 row">
-                                        <label for="" class="col-md-3 col-form-label">Payment Note</label>
-                                        <textarea name="payment_note" id="payment_note" rows="3" class="form-control col-md-9"></textarea>
+                                        <label for="" class="col-md-4 col-form-label">Payment Note</label>
+                                        <textarea name="payment_note" id="payment_note" rows="3" class="form-control col-md-8"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="freight-information mt-3">
+                                <h5>FREIGHT INFORMATION</h5>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6" style="padding-right: 30px;">
+                                        <div class="mb-3 row">
+                                            <label for="" class="col-md-4 col-form-label mandatory">Fregiht
+                                                Type</label>
+                                            <select name="freight_type" id="freight_type" class="form-control col-md-8">
+                                                <option value="" selected disabled>Select Fregiht Type</option>
+                                                <option value="0">Air Freight</option>
+                                                <option value="1">Sea Freight</option>
+                                            </select>
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label for="" class="col-md-4 mandatory col-form-label">
+                                                Ship Date</label>
+                                            <input type="date" name="ship_date" class="form-control col-md-8"
+                                                value="<?= date('Y-m-d') ?>" />
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label for="" class="col-md-4 mandatory col-form-label">
+                                                Origin Country</label>
+                                            <input type="text" name="origin_country" id="origin_country"
+                                                class="form-control col-md-8" value="Indonesia" />
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" style="padding-left: 30px;">
+                                        <div class="mb-3 row">
+                                            <label for="" class="col-md-4 mandatory col-form-label">
+                                                Port of Embarkation</label>
+                                            <input type="text" name="port_embarkation" id="port_embarkation"
+                                                class="form-control col-md-8" />
+                                        </div>
+                                        <div class="mb-3 row">
+                                            <label for="" class="col-md-4 mandatory col-form-label">
+                                                Port of Discharge</label>
+                                            <input type="text" name="port_discharge" id="port_discharge"
+                                                class="form-control col-md-8" />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="mt-3" style="display: block; overflow-x: scroll; white-space: nowrap;">
-                                <table class="table table-bordered" width="100%" cellspacing="0" id="addRequestTable">
+                                <table class="table table-bordered" width="100%" cellspacing="0"
+                                    id="addRequestTable">
                                     <thead class="bg-primary text-white text-uppercase text-center">
                                         <tr>
                                             <th width="30px"></th>
@@ -86,21 +140,42 @@
                                 <div class="col-5">
                                     <div class="card mt-3" style="background-color: rgb(221, 239, 255);">
                                         <div class="card-body">
-                                            <div class="row font-weight-bold" style="color: black;">
-                                                <div class="col-6">Subtotal</div>
-                                                <div class="col-6 text-right" id="rSubtotal"></div>
+                                            <div class="row font-weight-bold mb-2" style="color: black;">
+                                                <div class="col-4">Freight Cost</div>
+                                                <div class="col-8">
+                                                    <input type="number" class="form-control" name="freight_rp"
+                                                        id="freight_rp" value="0">
+                                                </div>
+                                            </div>
+                                            <div class="row font-weight-bold mb-2" style="color: black;">
+                                                <div class="col-4">Insurance</div>
+                                                <div class="col-8">
+                                                    <input type="number" class="form-control" name="insurance"
+                                                        id="insurance" value="0">
+                                                </div>
+                                            </div>
+                                            <div class="row font-weight-bold mb-2" style="color: black;">
+                                                <div class="col-4">Others</div>
+                                                <div class="col-8">
+                                                    <input type="number" class="form-control" name="others"
+                                                        id="others" value="0">
+                                                </div>
                                             </div>
                                             <div class="row font-weight-bold" style="color: black;">
-                                                <div class="col-6">PPN</div>
-                                                <div class="col-6 text-right" id="rPPN"></div>
+                                                <div class="col-4">Subtotal</div>
+                                                <div class="col-8 text-right" id="rSubtotal"></div>
                                             </div>
                                             <div class="row font-weight-bold" style="color: black;">
-                                                <div class="col-6">Diskon</div>
-                                                <div class="col-6 text-right" id="rDisc"></div>
+                                                <div class="col-4">PPN</div>
+                                                <div class="col-8 text-right" id="rPPN"></div>
+                                            </div>
+                                            <div class="row font-weight-bold" style="color: black;">
+                                                <div class="col-4">Diskon</div>
+                                                <div class="col-8 text-right" id="rDisc"></div>
                                             </div>
                                             <div class="row font-weight-bold mt-3 h4" style="color: black;">
-                                                <div class="col-6">Total</div>
-                                                <div class="col-6 text-right" id="rTotal"></div>
+                                                <div class="col-4">Total</div>
+                                                <div class="col-8 text-right" id="rTotal"></div>
                                             </div>
                                         </div>
                                     </div>
