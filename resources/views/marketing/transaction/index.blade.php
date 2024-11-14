@@ -144,21 +144,23 @@
                                                 <div class="col-4">Freight Cost</div>
                                                 <div class="col-8">
                                                     <input type="number" class="form-control" name="freight_rp"
-                                                        id="freight_rp" value="0">
+                                                        onkeyup="sumTotal()" id="freight_rp" value="0">
                                                 </div>
                                             </div>
                                             <div class="row font-weight-bold mb-2" style="color: black;">
                                                 <div class="col-4">Insurance</div>
                                                 <div class="col-8">
-                                                    <input type="number" class="form-control" name="insurance"
-                                                        id="insurance" value="0">
+                                                    <input type="number" class="form-control"
+                                                        name="insurance"onkeyup="sumTotal()" id="insurance"
+                                                        value="0">
                                                 </div>
                                             </div>
                                             <div class="row font-weight-bold mb-2" style="color: black;">
                                                 <div class="col-4">Others</div>
                                                 <div class="col-8">
-                                                    <input type="number" class="form-control" name="others"
-                                                        id="others" value="0">
+                                                    <input type="number" class="form-control"
+                                                        name="others"onkeyup="sumTotal()" id="others"
+                                                        value="0">
                                                 </div>
                                             </div>
                                             <div class="row font-weight-bold" style="color: black;">
@@ -427,9 +429,15 @@
             tjumlah += jumlah;
         }
 
+        var freightrp = Number($('#freight_rp').val())
+        var insurance = Number($('#insurance').val())
+        var others = Number($('#others').val())
+
+        var jumlahtotal = tjumlah + freightrp + insurance + others
+
         $('#rSubtotal').text(formatRupiah(tsubtotal, 'Rp.'))
         $('#rPPN').text(formatRupiah(tppn, 'Rp.'))
         $('#rDisc').text(formatRupiah(tdiskon, 'Rp.'))
-        $('#rTotal').text(formatRupiah(tjumlah, 'Rp.'))
+        $('#rTotal').text(formatRupiah(jumlahtotal, 'Rp.'))
     }
 </script>

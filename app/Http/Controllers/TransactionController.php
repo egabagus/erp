@@ -19,6 +19,7 @@ class TransactionController extends Controller
     public function store(TransactionRequest $request)
     {
         DB::beginTransaction();
+        // dd($request);
         try {
             $header = new HeaderTransaction();
             $header->no_transaksi       = CreateItemNumber::generateInvoiceNumber();
@@ -32,6 +33,14 @@ class TransactionController extends Controller
             $header->subtotal        = $request->subtotal_all;
             $header->ppn_total        = $request->ppn_all;
             $header->disc_total       = $request->disc_all;
+            $header->ship_date       = $request->ship_date;
+            $header->freight_type       = $request->freight_type;
+            $header->origin_country       = $request->origin_country;
+            $header->port_embarkation       = $request->port_embarkation;
+            $header->port_discharge       = $request->port_discharge;
+            $header->freight_rp       = $request->freight_rp;
+            $header->insurance_rp       = $request->insurance;
+            $header->other       = $request->others;
             $header->total       = $request->total_all;
             $header->save();
 
