@@ -46,6 +46,35 @@
     </div>
 </div>
 
+<div class="modal fade" id="signatureModal" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form method="POST" id="signatureForm" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Upload Signature</h5>
+                    <button type="button" class="btn-sm btn-light" data-dismiss="modal"><i
+                            class="fas fa-times"></i></button>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="idUsersSign">
+                    <div class="mb-3 row">
+                        <label class="col-md-3 pt-2" for="">Select File</label>
+                        <input type="file" name="signature" id="signature" class="form-control col-md-9" />
+                        @error('name')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="upload()">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
     function editUser(data) {
         $('#editModal').modal('show')
@@ -127,5 +156,46 @@
                 },
             })
         });
+    }
+
+    function uploadSignature(id) {
+        $('#signatureModal').modal('show')
+        $('#idUsersSign').val(id)
+    }
+
+    function upload() {
+        var form = document.getElementById('signatureForm')
+        var formData = new FormData(form)
+        var id = $('#idUsersSign').val();
+        $.ajax({
+            url: `{{ url('master/users/sign') }}/${id}`,
+            data: formData,
+            method: 'POST',
+            // headers: {
+            //     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            // },
+            processData: false,
+            contentType: false,
+            beforeSend: function() {
+                showLoading();
+            },
+            success: (data) => {
+                Swal.fire({
+                    title: "Berhasil!",
+                    type: "success",
+                    icon: "success",
+                }).then(function() {
+                    userTable.ajax.reload()
+                    $('#signatureModal').modal('hide')
+                })
+            },
+            error: function() {
+                hideLoading();
+                handleErrorAjax(error)
+            },
+            complete: function() {
+                hideLoading();
+            },
+        })
     }
 </script>

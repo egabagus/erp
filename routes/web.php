@@ -55,6 +55,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/users', 'store');
             Route::post('/users/update/{id}', 'update');
             Route::post('/users/delete/{id}', 'destroy');
+            Route::post('/users/sign/{id}', 'uploadSignature');
         });
 
         Route::controller(BarangController::class)->group(function () {

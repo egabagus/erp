@@ -64,7 +64,6 @@ class UserController extends Controller implements HasMiddleware
     public function store(UserRequest $request)
     {
         DB::beginTransaction();
-
         try {
             // $request->validate([
             //     'name' => 'required|string|max:255',
@@ -90,6 +89,32 @@ class UserController extends Controller implements HasMiddleware
             DB::rollback();
             return response()->json([
                 'error' => $e
+            ], 500);
+        }
+    }
+
+    public function uploadSignature($id, Request $request)
+    {
+        DB::beginTransaction();
+        try {
+            $request->validate([
+                'signature' => 'required|file|mimes:png,jpg|max:512'
+            ]);
+
+            $user = User::find($id);
+            $path = $request->file('signature')->store('signature');
+
+            $user->signature = $path;
+            $user->save();
+
+            DB::commit();
+            return response()->json([
+                'data' => $user
+            ], 201);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return response()->json([
+                'error' => $e->getMessage()
             ], 500);
         }
     }

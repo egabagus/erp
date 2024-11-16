@@ -129,6 +129,7 @@
                     name: 'id',
                     render: function(data) {
                         return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                            <button class="btn btn-sm btn-success" id="btnSignature" onclick="uploadSignature(${data})"><i class="fas fa-signature"></i></button>
                             <button class="btn btn-sm btn-warning" id="btnEditUser"><i class="fas fa-pen"></i></button>
                             <button class="btn btn-sm btn-danger" id="btnDeleteUser"><i class="fas fa-trash"></i></button>
                             </div>`
