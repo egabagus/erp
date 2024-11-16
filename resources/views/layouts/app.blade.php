@@ -82,8 +82,8 @@
                     <div id="collapsePages" class="collapse" aria-labelledby="headingPages"
                         data-parent="#accordionSidebar">
                         <div class="bg-white py-2 collapse-inner rounded">
-                            <a class="collapse-item" href="{{ url('/users') }}">User</a>
-                            <a class="collapse-item" href="{{ url('/roles') }}">Role</a>
+                            <a class="collapse-item" href="{{ url('/master/users') }}">User</a>
+                            <a class="collapse-item" href="{{ url('/master/roles') }}">Role</a>
                             <a class="collapse-item" href="{{ url('master/administration') }}">Administration</a>
                         </div>
                     </div>

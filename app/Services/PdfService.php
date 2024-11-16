@@ -13,7 +13,7 @@ class PdfService extends FPDF
     {
         $profile = Administration::where('company_code', env('ID'))->first();
 
-        // dd($profile);
+        // dd(env('ID'));
 
         $this->SetFont('Helvetica', 'B', 12);
 
@@ -61,13 +61,66 @@ class PdfService extends FPDF
             ->header('Content-Disposition', 'inline; filename="' . $fileName . '"');
     }
 
-    public function bodyTable($data, $width, $height = 6, $border = 1)
+    public function headerTable($data, $width, $height = 6, $border = 1)
     {
+        $this->SetDrawColor(190, 190, 190);
         foreach ($data as $row) {
+            $maxHeight = 0; // Untuk mengatur tinggi baris berdasarkan MultiCell
+
+            // Hitung ketinggian baris maksimum berdasarkan MultiCell
             foreach ($row as $key => $value) {
-                $this->Cell($width[$key], $height, $value, $border, 0, 'L');
+                // Simpan posisi X dan Y awal
+                $x = $this->GetX();
+                $y = $this->GetY();
+
+                // Cetak MultiCell untuk membungkus teks
+                $this->bold();
+                $this->MultiCell($width[$key], $height, $value, $border, 'C');
+                $this->normal();
+
+                // Hitung ketinggian sel tertinggi di baris tersebut
+                $maxHeight = max($maxHeight, $this->GetY() - $y);
+
+                // Kembali ke posisi X awal, tetapi di baris yang sama
+                $this->SetXY($x + $width[$key], $y);
             }
-            $this->Ln(); // Pindah ke baris baru setelah satu baris selesai
+
+            // Pindah ke baris baru dengan tinggi maksimum
+            $this->Ln($maxHeight);
+        }
+    }
+
+    public function bodyTable($data, $width, $height = 6, $border = 1, $alignColumns = [])
+    {
+        $this->SetDrawColor(190, 190, 190);
+        foreach ($data as $row) {
+            $maxHeight = 0; // Untuk mengatur tinggi baris berdasarkan MultiCell
+
+            // Hitung ketinggian baris maksimum berdasarkan MultiCell
+            foreach ($row as $key => $value) {
+                // Simpan posisi X dan Y awal
+                $x = $this->GetX();
+                $y = $this->GetY();
+
+                $align = isset($alignColumns[$key]) && $alignColumns[$key] === 'R' ? 'R' : 'L';
+
+                // Jika kolom dalam format rupiah, terapkan fungsi formatRupiah
+                // if (isset($alignColumns[$key]) && $alignColumns[$key] === 'R') {
+                //     $value = $this->formatRupiah($value);
+                // }
+
+                // Cetak MultiCell untuk membungkus teks
+                $this->MultiCell($width[$key], $height, $value, $border, $align);
+
+                // Hitung ketinggian sel tertinggi di baris tersebut
+                $maxHeight = max($maxHeight, $this->GetY() - $y);
+
+                // Kembali ke posisi X awal, tetapi di baris yang sama
+                $this->SetXY($x + $width[$key], $y);
+            }
+
+            // Pindah ke baris baru dengan tinggi maksimum
+            $this->Ln($maxHeight);
         }
     }
 
@@ -83,6 +136,15 @@ class PdfService extends FPDF
 
     function formatRupiah($number)
     {
+        // return $this->Cell(0, 5, number), 0, 0, 'R');
         return 'Rp ' . number_format($number, 0, ',', '.');
+    }
+
+    public function Footer()
+    {
+        $this->SetY(-15); // Pindahkan ke 15 mm dari bawah
+        $this->SetFont('Helvetica', 'I', 8); // Font Italic
+        $tanggal = date('d-m-Y H:i:s');
+        $this->Cell(0, 10, 'Dicetak oleh System pada ' . $tanggal, 0, 0, 'C'); // Teks footer di tengah
     }
 }

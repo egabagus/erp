@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CancelApprovePO;
 use App\Http\Requests\PORequest;
+use App\Models\Administration;
 use App\Models\DetailPO;
 use App\Models\HeaderPO;
 use App\Models\HeaderRequestOrder;
 use App\Services\CreateItemNumber;
 use App\Services\PdfService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -158,14 +160,11 @@ class PurchaseOrderController extends Controller
 
     public function pdf($ponumber)
     {
-        $data = HeaderPO::with('detail', 'vendor')->where('po_number', $ponumber)->first();
+        $data_po = HeaderPO::with('detail.product', 'vendor')->where('po_number', $ponumber)->first();
+        $co = Administration::where('company_code', env('ID'))->first();
+        // dd($co);
         $pdf = new PdfService();
-
-        // dd($data);
-        // Tambahkan halaman
         $pdf->AddPage();
-
-        // Set header
         $pdf->setHeader();
 
         // Set font untuk konten
@@ -175,20 +174,82 @@ class PurchaseOrderController extends Controller
         $pdf->Cell(0, 10, 'PURCHASE ORDER', 0, 0, 'C');
         $pdf->Ln(8);
         $pdf->SetFont('Helvetica', '', 12);
-        $pdf->Cell(0, 10, $data->po_number, 0, 0, 'C');
+        $pdf->Cell(0, 10, $data_po->po_number, 0, 0, 'C');
 
         $pdf->SetFontSize(8);
         $pdf->Ln(15);
 
+        $arr_po = array(
+            array('PO DATE', ': ' . Carbon::parse($data_po->po_date)->format('d-m-Y'), 'Remarks', ': ' . $data_po->incoterms),
+        );
+        $dataHeader = array(
+            array('SHIP TO', '', 'VENDOR DATA', ''),
+        );
         $data = array(
-            array('PO Date', ': ' . $data->po_date, 'Vendor', ': ' . $data->vendor_code),
+            array('Name', ': ' . $co->company_name, 'Vendor', ': ' . $data_po->vendor_code),
+            array('Phone', ': ' . $co->handphone, 'Name', ': ' . $data_po->vendor->nama_supp),
+            array('Email', ': ' . $co->email, 'PIC', ': ' . $data_po->vendor->pic),
+            array('Address', ': ' . $co->alamat, 'Phone', ': ' . $data_po->vendor->handphone),
+            array('', '', 'Email', ': ' . $data_po->vendor->email),
+            array('', '', 'Address', ': ' . $data_po->vendor->alamat),
+        );
+        $arr_header = array(
+            array('Item Code', 'Item Name', 'Qty', 'Price / Unit', 'Tax', 'Disc', 'Total')
+        );
+        // dd($data_po->detail);
+        $detailData = [];
+        foreach ($data_po->detail as $detail) {
+            $detailData[] = [
+                $detail->item_code, // Kolom untuk Product Name
+                $detail->product->nama_barang,      // Kolom untuk Quantity
+                $detail->qty,      // Kolom untuk Quantity
+                $pdf->formatRupiah($detail->product->harga),      // Kolom untuk Quantity
+                $pdf->formatRupiah($detail->taxrp),      // Kolom untuk Quantity
+                $pdf->formatRupiah($detail->discrp),      // Kolom untuk Quantity
+                $pdf->formatRupiah($detail->total)      // Kolom untuk Quantity
+            ];
+        }
+
+        $arr_calculate = array(
+            array('', 'SUBTOTAL', $pdf->formatRupiah($data_po->subtotal)),
+            array('', 'PPN', $pdf->formatRupiah($data_po->totalppn)),
+            array('', 'DISKON', $pdf->formatRupiah($data_po->totaldisc)),
+            array('', 'TOTAL', $pdf->formatRupiah($data_po->total)),
         );
 
         // Lebar kolom dinamis (misalnya)
-        $widths = array(20, 70, 20, 70); // Sesuaikan lebar kolom sesuai kebutuhan
+        $widths = array(25, 65, 25, 65);
+        $detailWidths = array(20, 30, 10, 30, 30, 30, 30);
+        $calculateWidths = array(120, 20, 40);
+
+        $detailAligns = [
+            3 => 'R', // Kolom kedua rata kanan
+            4 => 'R', // Kolom kedua rata kanan
+            5 => 'R', // Kolom kedua rata kanan
+            6 => 'R', // Kolom kedua rata kanan
+        ];
+        $calculateAligns = [
+            2 => 'R' // Kolom kedua rata kanan
+        ];
+
         // Buat tabel dengan lebar kolom dinamis
+        $pdf->bodyTable($arr_po, $widths, 5, 0);
+        $pdf->Ln(2);
+        $pdf->bold();
+        $pdf->bodyTable($dataHeader, $widths, 5, 0);
+        $pdf->normal();
         $pdf->bodyTable($data, $widths, 5, 0);
 
+        $pdf->Ln(8);
+        $pdf->headerTable($arr_header, $detailWidths, 5);
+        $pdf->bodyTable($detailData, $detailWidths, 5, 1, $detailAligns);
+
+        $pdf->Ln(4);
+        $pdf->bold();
+        $pdf->bodyTable($arr_calculate, $calculateWidths, 5, 0, $calculateAligns);
+        $pdf->normal();
+
+        // $pdf->setFooter();
         $pdf->setDocumentTitle('Judul PDF Anda');
 
         return $pdf->outputPdf('document.pdf');

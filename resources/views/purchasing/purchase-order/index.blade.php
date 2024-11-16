@@ -187,7 +187,7 @@
                     name: 'id',
                     render: function(data, type, row, meta) {
                         var role = {{ auth()->user()->role_id }}
-                        console.log(role)
+                        // console.log(role)
                         if (row.app_manager == 0) {
                             return ``
                         } else if (row.app_manager == 1) {
@@ -323,6 +323,7 @@
                     name: 'po_number',
                     render: function(data, type, row, meta) {
                         var role = {{ auth()->user()->role_id }}
+                        // console.log(data)
                         if (role == 6) {
                             if (row.app_operational === 0) {
                                 return `<div class="d-flex justify-content-center" style="gap: 5px;">
@@ -351,6 +352,10 @@
                                     <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
                                     </div>`;
                             }
+                        } else {
+                            return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                                    <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
+                                    </div>`
                         }
                     }
                 },
