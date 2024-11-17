@@ -82,6 +82,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/supplier', 'store');
             Route::post('/supplier/update/{id}', 'update');
             Route::post('/supplier/delete/{id}', 'destroy');
+            Route::get('/supplier/payment/{code}', 'showPayment');
+            Route::post('/supplier/payment', 'storePayment');
         });
 
         Route::controller(CustomerControoler::class)->group(function () {

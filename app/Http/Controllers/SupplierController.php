@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\SupplierRequest;
 use App\Http\Requests\UpdateSupplierRequest;
 use App\Models\Supplier;
+use App\Models\VendorPayment;
 use App\Services\CreateItemNumber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -125,6 +126,50 @@ class SupplierController extends Controller
             DB::rollback();
             return response()->json([
                 'error' => $e
+            ], 500);
+        }
+    }
+
+    public function showPayment($code)
+    {
+        try {
+            $data = VendorPayment::where('vendor_code', $code)->get();
+
+            return response()->json([
+                'data' => $data
+            ], 201);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return response()->json([
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function storePayment(Request $request)
+    {
+        DB::beginTransaction();
+
+        try {
+            $existing = VendorPayment::where('vendor_code', $request->kode_vendor)->delete();
+
+            foreach ($request->input('bank') as $key => $bank) {
+                $payment = new VendorPayment();
+                $payment->vendor_code   = $request->kode_vendor;
+                $payment->name          = $bank;
+                $payment->desc          = $request->input('rekening')[$key];
+                $payment->save();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'data' => $payment
+            ], 201);
+        } catch (\Throwable $e) {
+            DB::rollback();
+            return response()->json([
+                'error' => $e->getMessage()
             ], 500);
         }
     }

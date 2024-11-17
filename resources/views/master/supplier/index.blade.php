@@ -140,7 +140,7 @@
                 {
                     data: 'status',
                     name: 'status',
-                    render: function(data) {
+                    render: function(data, type, row, meta) {
                         if (data == 1) {
                             return `<div class="badge bg-success text-white">Aktif</div>`
                         } else {
@@ -151,8 +151,9 @@
                 {
                     data: 'id',
                     name: 'id',
-                    render: function(data) {
+                    render: function(data, type, row, meta) {
                         return `<div class="d-flex justify-content-center" style="gap: 5px;">
+                            <button class="btn btn-sm btn-success" id="btnPaymentVendor" onclick="payment('${row.kode_supp}', '${row.nama_supp}')"><i class="fas fa-credit-card"></i></button>
                             <button class="btn btn-sm btn-warning" id="btnEditVendor"><i class="fas fa-pen"></i></button>
                             <button class="btn btn-sm btn-danger" id="btnDeleteVendor"><i class="fas fa-trash"></i></button>
                             </div>`
