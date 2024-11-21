@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class HeaderPO extends Model
 {
@@ -21,5 +22,10 @@ class HeaderPO extends Model
     public function vendor()
     {
         return $this->belongsTo(Supplier::class, 'vendor_code', 'kode_supp');
+    }
+
+    public function purchaser_detail(): HasOne
+    {
+        return $this->hasOne(User::class, 'email', 'purchaser');
     }
 }

@@ -8,12 +8,15 @@ use App\Models\Administration;
 use App\Models\DetailPO;
 use App\Models\HeaderPO;
 use App\Models\HeaderRequestOrder;
+use App\Models\User;
 use App\Services\CreateItemNumber;
 use App\Services\PdfService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Livewire\Features\SupportQueryString\BaseUrl;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Yajra\DataTables\Facades\DataTables;
 
 class PurchaseOrderController extends Controller
@@ -160,7 +163,7 @@ class PurchaseOrderController extends Controller
 
     public function pdf($ponumber)
     {
-        $data_po = HeaderPO::with('detail.product', 'vendor')->where('po_number', $ponumber)->first();
+        $data_po = HeaderPO::with('detail.product', 'vendor.payment', 'purchaser_detail')->where('po_number', $ponumber)->first();
         $co = Administration::where('company_code', env('ID'))->first();
         // dd($co);
         $pdf = new PdfService();
@@ -216,20 +219,27 @@ class PurchaseOrderController extends Controller
             array('', 'DISKON', $pdf->formatRupiah($data_po->totaldisc)),
             array('', 'TOTAL', $pdf->formatRupiah($data_po->total)),
         );
+        $arr_payment = array(
+            array('Terms', ': ' . $data_po->payment_terms),
+            array($data_po->vendor->payment[0]->name, ': ' . $data_po->vendor->payment[0]->desc),
+            array($data_po->vendor->payment[1]->name, ': ' . $data_po->vendor->payment[1]->desc)
+        );
+        $purchaserSign = 'app/' . $data_po->purchaser_detail->signature;
 
         // Lebar kolom dinamis (misalnya)
         $widths = array(25, 65, 25, 65);
         $detailWidths = array(20, 30, 10, 30, 30, 30, 30);
         $calculateWidths = array(120, 20, 40);
+        $paymentWidths = array(20, 20);
 
         $detailAligns = [
-            3 => 'R', // Kolom kedua rata kanan
-            4 => 'R', // Kolom kedua rata kanan
-            5 => 'R', // Kolom kedua rata kanan
-            6 => 'R', // Kolom kedua rata kanan
+            3 => 'R',
+            4 => 'R',
+            5 => 'R',
+            6 => 'R',
         ];
         $calculateAligns = [
-            2 => 'R' // Kolom kedua rata kanan
+            2 => 'R'
         ];
 
         // Buat tabel dengan lebar kolom dinamis
@@ -247,7 +257,31 @@ class PurchaseOrderController extends Controller
         $pdf->Ln(4);
         $pdf->bold();
         $pdf->bodyTable($arr_calculate, $calculateWidths, 5, 0, $calculateAligns);
+        $pdf->Ln(2);
+        $pdf->Cell(0, 5, 'Payment Details :');
+        $pdf->Ln(5);
         $pdf->normal();
+        $pdf->bodyTable($arr_payment, $paymentWidths, 5, 0);
+        $pdf->Ln(10);
+        // $pdf->bodyTable($arr_sign, $signWidths, 5, 0, $signAligns);
+        $pdf->Cell(45, 5, 'Purchasing', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Operational Manager', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Finance Manager', 0, 1, 'C');
+        $pdf->Cell(30, 5, $pdf->qrCode(env('APP_URL') . 'purchasing/purchase-order/print-pdf/' . $ponumber, 160, $pdf->GetY(), 25), 0, 1, 'C');
+        // TTD
+        $pdf->Cell(45, 20, '', 0, 0); // Cell kosong untuk tanda tangan
+        $pdf->Image(storage_path($purchaserSign), $pdf->GetX() - 40, $pdf->GetY() + 2, 33.78); // Posisi relatif
+        $pdf->Cell(45, 20, '', 0, 0);
+        $pdf->Cell(45, 20, '', 0, 1);
+
+        $pdf->Cell(45, 5, $data_po->purchaser_detail->name, 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Operational Manager', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Finance Manager', 0, 1, 'C');
+
+        $pdf->Ln(4);
+        // $qrCode = base64_encode(QrCode::format('png')
+        //     ->generate(env('APP_URL') . '/purchasing/purchase-order/print-pdf/' . $ponumber));
+        // $pdf->Image('data:image/png;base64,' . $qrCode, $pdf->GetX(), $pdf->GetY() + 2, 33.78);
 
         // $pdf->setFooter();
         $pdf->setDocumentTitle('Judul PDF Anda');

@@ -102,12 +102,7 @@ class PdfService extends FPDF
                 $x = $this->GetX();
                 $y = $this->GetY();
 
-                $align = isset($alignColumns[$key]) && $alignColumns[$key] === 'R' ? 'R' : 'L';
-
-                // Jika kolom dalam format rupiah, terapkan fungsi formatRupiah
-                // if (isset($alignColumns[$key]) && $alignColumns[$key] === 'R') {
-                //     $value = $this->formatRupiah($value);
-                // }
+                $align = $alignColumns[$key] ?? 'L'; // Mengasumsikan nilai selalu 'L', 'C', atau 'R'
 
                 // Cetak MultiCell untuk membungkus teks
                 $this->MultiCell($width[$key], $height, $value, $border, $align);
