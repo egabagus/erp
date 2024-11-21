@@ -24,6 +24,16 @@ class HeaderPO extends Model
         return $this->belongsTo(Supplier::class, 'vendor_code', 'kode_supp');
     }
 
+    public function finance()
+    {
+        return $this->belongsTo(User::class, 'finance_by', 'id');
+    }
+
+    public function opt()
+    {
+        return $this->belongsTo(User::class, 'operational_by', 'id');
+    }
+
     public function purchaser_detail(): HasOne
     {
         return $this->hasOne(User::class, 'email', 'purchaser');
