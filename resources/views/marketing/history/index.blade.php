@@ -197,9 +197,9 @@
                     name: 'status',
                     render: function(data, type, row, meta) {
                         if (data == 1) {
-                            return `<div class="badge bg-success-light p-2">Aktif</div>`
+                            return `<div class="badge bg-success-light p-2">PAID</div>`
                         } else {
-                            return `<div class="badge bg-danger p-2">NonAktif</div>`
+                            return `<div class="badge bg-danger p-2">UNPAID</div>`
                         }
                     }
                 },
