@@ -110,6 +110,12 @@
                         <span>Customer</span></a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url('master/payment-method') }}">
+                        <i class="fas fa-fw fa-credit-card"></i>
+                        <span>Payment Method</span></a>
+                </li>
+
                 <!-- Divider -->
                 <hr class="sidebar-divider">
 

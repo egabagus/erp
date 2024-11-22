@@ -8,6 +8,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerControoler;
 use App\Http\Controllers\Master\ModulController;
+use App\Http\Controllers\Master\PaymentMethodController;
 use App\Http\Controllers\ProformaInvoiceController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RequestOrderController;
@@ -100,6 +101,12 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/{roleId}/delete', [RoleController::class, 'destroy']);
             Route::get('/{roleId}/give-permissions', [RoleController::class, 'addPermissionToRole']);
             Route::put('/{roleId}/give-permissions', [RoleController::class, 'givePermissionToRole']);
+        });
+
+        Route::controller(PaymentMethodController::class)->group(function () {
+            Route::get('/payment-method', 'index');
+            Route::post('/payment-method', 'store');
+            Route::get('/payment-method/data', 'data');
         });
     });
 
