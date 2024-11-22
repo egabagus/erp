@@ -190,6 +190,59 @@
                         <i class="fas fa-money-check"></i>
                         <span>Transaction History</span></a>
                 </li>
+
+                <hr class="sidebar-divider">
+
+                <!-- Heading -->
+                <div class="sidebar-heading">
+                    REPORT
+                </div>
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapsePages1" aria-expanded="true" aria-controls="collapsePages1">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Production Report</span>
+                    </a>
+                    <div id="collapsePages1" class="collapse" aria-labelledby="headingPages"
+                        data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="#">Request Order</a>
+                            <a class="collapse-item" href="#">Product Data</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapsePages2" aria-expanded="true" aria-controls="collapsePages2">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Purchasing Report</span>
+                    </a>
+                    <div id="collapsePages2" class="collapse" aria-labelledby="headingPages"
+                        data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="#">Purchase Order</a>
+                            <a class="collapse-item" href="#">TTB</a>
+                        </div>
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                        data-target="#collapsePages3" aria-expanded="true" aria-controls="collapsePages3">
+                        <i class="fas fa-fw fa-folder"></i>
+                        <span>Finance</span>
+                    </a>
+                    <div id="collapsePages3" class="collapse" aria-labelledby="headingPages"
+                        data-parent="#accordionSidebar">
+                        <div class="bg-white py-2 collapse-inner rounded">
+                            <a class="collapse-item" href="#">Sales Report</a>
+                            <a class="collapse-item" href="#">Purchase Report</a>
+                            <a class="collapse-item" href="#">Cash Flow Statement</a>
+                        </div>
+                    </div>
+                </li>
             @elseif ($user->role_id == 4)
                 <!-- Divider -->
                 <hr class="sidebar-divider">
