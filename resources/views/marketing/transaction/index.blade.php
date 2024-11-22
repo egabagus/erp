@@ -77,8 +77,8 @@
                                                 Type</label>
                                             <select name="freight_type" id="freight_type" class="form-control col-md-8">
                                                 <option value="" selected disabled>Select Fregiht Type</option>
-                                                <option value="0">Air Freight</option>
-                                                <option value="1">Sea Freight</option>
+                                                <option value="Air Freight">Air Freight</option>
+                                                <option value="Sea Freight">Sea Freight</option>
                                             </select>
                                         </div>
                                         <div class="mb-3 row">

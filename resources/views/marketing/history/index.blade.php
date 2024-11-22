@@ -65,9 +65,16 @@
                 <h4>File Invoice</h4>
             </div>
             <div class="card-body">
+                <div class="row mb-4">
+                    <label class="control-label col-4">Invoice Number</label>
+                    <div class="col-8">
+                        <input type="text" readonly class="form-control" id="invoiceNumber" />
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-6">
-                        <button class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
+                        <button onclick="generateProforma()"
+                            class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
                             <i class="fas fa-file-alt" style="font-size: 30px;"></i>
                             <span class="font-weight-bold mt-1">Proforma Invoice</span> <!-- Text -->
                         </button>
@@ -212,6 +219,7 @@
 
     function fileShow(number) {
         $('#fileModal').modal('show')
+        $('#invoiceNumber').val(number)
     }
 
     function deleteSupplier(id) {
@@ -342,6 +350,11 @@
                 })
             }
         });
+    }
+
+    function generateProforma() {
+        var invNumber = $('#invoiceNumber').val()
+        window.open(`{{ url('invoices/proforma-invoice') }}/${invNumber}`, '_blank');
     }
 </script>
 @include('master.supplier.create')

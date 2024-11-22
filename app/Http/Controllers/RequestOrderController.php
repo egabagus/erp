@@ -150,7 +150,7 @@ class RequestOrderController extends Controller
 
     public function pdf($req_number)
     {
-        $dataRO = HeaderRequestOrder::with('detail.product')->where('req_number', $req_number)->first();
+        $dataRO = HeaderRequestOrder::with('detail.product', 'req', 'approved')->where('req_number', $req_number)->first();
         $pdf = new PdfService();
 
         // dd($dataRO);
@@ -191,7 +191,7 @@ class RequestOrderController extends Controller
             array('Item Code', 'Item Name', 'Quantity', 'Price / Unit', 'Total')
         );
 
-        $pdf->bodyTable($header, $widthsTable);
+        $pdf->headerTable($header, $widthsTable);
         $pdf->normal();
         // dd($dataRO);
         $detailData = [];
@@ -207,6 +207,34 @@ class RequestOrderController extends Controller
 
         // Memasukkan data detail ke dalam PDF
         $pdf->bodyTable($detailData, $widthsTable);
+
+        $pdf->Ln(10);
+        $pdf->Cell(45, 5, 'Request By,', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Approved By,', 0, 0, 'C');
+        $pdf->Cell(30, 5, $pdf->qrCode(env('APP_URL') . 'production/request-order/pdf/' . $req_number, 160, $pdf->GetY(), 25), 0, 1, 'C');
+        // TTD
+        $reqBy = $dataRO->req;
+        if ($reqBy) {
+            $reqSign = 'app/' . $reqBy->signature;
+        } else {
+            $reqSign = '';
+        }
+
+        $appBy = $dataRO->approved;
+        if ($appBy) {
+            $appSign = 'app/' . $appBy->signature;
+        } else {
+            $appSign = '';
+        }
+        $pdf->Cell(45, 16, $reqBy && $reqBy->signature ? $pdf->Image(storage_path($reqSign), $pdf->GetX() + 8, $pdf->GetY() + 2, 30) : '', 0, 0);
+        $pdf->Cell(45, 16, $appBy && $appBy->signature ? $pdf->Image(storage_path($appSign), $pdf->GetX() + 8, $pdf->GetY() + 2, 30) : '', 0, 1);
+
+        $pdf->Cell(45, 5, $reqBy ? '( ' . $reqBy->name . ' )' : '( Production Staff )', 0, 0, 'C');
+        $pdf->Cell(45, 5, $appBy ? '( ' . $appBy->name . ' )' : '( Production Manager )', 0, 0, 'C');
+        $pdf->Ln(4);
+        $pdf->Cell(45, 5, 'Production Staff', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Production Manager', 0, 0, 'C');
+
 
         $pdf->setDocumentTitle('Judul PDF Anda');
 

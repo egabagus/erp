@@ -63,19 +63,23 @@ class PdfService extends FPDF
 
     public function headerTable($data, $width, $height = 6, $border = 1)
     {
-        $this->SetDrawColor(190, 190, 190);
+        // Atur warna latar belakang dan teks
+        $this->SetFillColor(20, 72, 156); // Warna biru (RGB)
+        $this->SetTextColor(255, 255, 255); // Warna putih
+
+        $this->SetDrawColor(20, 72, 156); // Warna biru (RGB)
+        // $this->SetDrawColor(2255, 255, 255); // Warna border
         foreach ($data as $row) {
             $maxHeight = 0; // Untuk mengatur tinggi baris berdasarkan MultiCell
 
-            // Hitung ketinggian baris maksimum berdasarkan MultiCell
             foreach ($row as $key => $value) {
                 // Simpan posisi X dan Y awal
                 $x = $this->GetX();
                 $y = $this->GetY();
 
-                // Cetak MultiCell untuk membungkus teks
+                // Cetak MultiCell dengan background warna biru
                 $this->bold();
-                $this->MultiCell($width[$key], $height, $value, $border, 'C');
+                $this->MultiCell($width[$key], $height, $value, $border, 'C', true);
                 $this->normal();
 
                 // Hitung ketinggian sel tertinggi di baris tersebut
@@ -88,7 +92,11 @@ class PdfService extends FPDF
             // Pindah ke baris baru dengan tinggi maksimum
             $this->Ln($maxHeight);
         }
+
+        // Kembalikan warna teks ke default untuk konten berikutnya
+        $this->SetTextColor(0, 0, 0); // Warna hitam
     }
+
 
     public function bodyTable($data, $width, $height = 6, $border = 1, $alignColumns = [])
     {

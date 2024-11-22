@@ -268,9 +268,9 @@ class PurchaseOrderController extends Controller
         $pdf->bodyTable($arr_payment, $paymentWidths, 5, 0);
         $pdf->Ln(10);
         // $pdf->bodyTable($arr_sign, $signWidths, 5, 0, $signAligns);
-        $pdf->Cell(45, 5, 'Purchasing', 0, 0, 'C');
-        $pdf->Cell(45, 5, 'Finance Manager', 0, 0, 'C');
-        $pdf->Cell(45, 5, 'Operational Manager', 0, 1, 'C');
+        $pdf->Cell(45, 5, 'Request By', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Approved By', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Approved By', 0, 1, 'C');
         $pdf->Cell(30, 5, $pdf->qrCode(env('APP_URL') . 'purchasing/purchase-order/print-pdf/' . $ponumber, 160, $pdf->GetY(), 25), 0, 1, 'C');
         // TTD
         $financeBy = $data_po->finance;
@@ -286,16 +286,17 @@ class PurchaseOrderController extends Controller
         } else {
             $optSign = '';
         }
-        $pdf->Cell(45, 20, '', 0, 0); // Cell kosong untuk tanda tangan
-        $pdf->Image(storage_path($purchaserSign), $pdf->GetX() - 40, $pdf->GetY() + 2, 33.78); // Posisi relatif
-        $pdf->Cell(45, 20, '', 0, 0);
-        $financeBy && $financeBy->signature ? $pdf->Image(storage_path($financeSign), $pdf->GetX() - 40, $pdf->GetY() + 2, 33.78) : ''; // Posisi relatif
-        $pdf->Cell(45, 20, '', 0, 1);
-        $optBy && $optBy->signature ? $pdf->Image(storage_path($optSign), $pdf->GetX() - 40, $pdf->GetY() + 2, 33.78) : ''; // Posisi relatif
+        $pdf->Cell(45, 16, $pdf->Image(storage_path($purchaserSign), $pdf->GetX() + 5, $pdf->GetY(), 33.78), 0, 0);
+        $pdf->Cell(45, 16, $financeBy && $financeBy->signature ? $pdf->Image(storage_path($financeSign), $pdf->GetX() + 5, $pdf->GetY(), 33.78) : '', 0, 0);
+        $pdf->Cell(45, 16, $optBy && $optBy->signature ? $pdf->Image(storage_path($optSign), $pdf->GetX() + 5, $pdf->GetY(), 33.78) : '', 0, 1);
 
         $pdf->Cell(45, 5, '( ' . $data_po->purchaser_detail->name . ' )', 0, 0, 'C');
         $pdf->Cell(45, 5, $financeBy ? '( ' . $financeBy->name . ' )' : '( Finance Manager )', 0, 0, 'C');
         $pdf->Cell(45, 5, $optBy ? '( ' . $optBy->name . ' )' : '( Operational Manager )', 0, 0, 'C');
+        $pdf->Ln(4);
+        $pdf->Cell(45, 5, 'Purchasing', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Finance Manager', 0, 0, 'C');
+        $pdf->Cell(45, 5, 'Operational Manager', 0, 1, 'C');
 
         $pdf->Ln(4);
         // $qrCode = base64_encode(QrCode::format('png')
