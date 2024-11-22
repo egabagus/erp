@@ -80,7 +80,8 @@
                         </button>
                     </div>
                     <div class="col-6">
-                        <button class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
+                        <button onclick="generateInvoice()"
+                            class="btn btn-success btn-block d-flex flex-column align-items-center px-4 pt-3">
                             <i class="fas fa-file-alt" style="font-size: 30px;"></i>
                             <span class="font-weight-bold mt-1">Invoice</span> <!-- Text -->
                         </button>
@@ -355,6 +356,11 @@
     function generateProforma() {
         var invNumber = $('#invoiceNumber').val()
         window.open(`{{ url('invoices/proforma-invoice') }}/${invNumber}`, '_blank');
+    }
+
+    function generateInvoice() {
+        var invNumber = $('#invoiceNumber').val()
+        window.open(`{{ url('invoices/invoice') }}/${invNumber}`, '_blank');
     }
 </script>
 @include('master.supplier.create')
