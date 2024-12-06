@@ -85,13 +85,6 @@
                 [1, 'asc']
             ],
             drawCallback: function(settings) {
-                $('table#table tr').on('click', '#btnEditCustomer', function(e) {
-                    e.preventDefault();
-
-                    let data = table.row($(this).parents('tr')).data()
-
-                    editCustomer(data)
-                });
                 $('table#table tr').on('click', '#btnDeleteCustomer', function(e) {
                     e.preventDefault();
 
@@ -130,10 +123,10 @@
                 {
                     data: 'id',
                     name: 'id',
-                    render: function(data) {
+                    render: function(data, type, row, meta) {
                         return `<div class="d-flex justify-content-center" style="gap: 5px;">
-                            <button class="btn btn-sm btn-warning" id="btnEditPayment"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-sm btn-danger" id="btnDeletePayment"><i class="fas fa-trash"></i></button>
+                            <button class="btn btn-sm btn-warning" onclick="editPayment('${data}', '${row.name}', '${row.value}', '${row.status}')"><i class="fas fa-pen"></i></button>
+                            <button class="btn btn-sm btn-danger" onclick="deletePayment(${data})"><i class="fas fa-trash"></i></button>
                             </div>`
                     }
                 },
@@ -141,45 +134,45 @@
         });
     }
 
-    // function deleteCustomer(id) {
-    //     Swal.fire({
-    //         title: "Yakin untuk menghapus data Customer?",
-    //         showCancelButton: true,
-    //         confirmButtonText: "Yes",
-    //         icon: "question"
-    //     }).then(function(result) {
-    //         if (result.value) {
-    //             $.ajax({
-    //                 url: `{{ url('master/customer/delete') }}/${id}`,
-    //                 method: 'POST',
-    //                 headers: {
-    //                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-    //                 },
-    //                 processData: false,
-    //                 contentType: false,
-    //                 beforeSend: function() {
-    //                     showLoading();
-    //                 },
-    //                 success: (data) => {
-    //                     Swal.fire({
-    //                         title: "Berhasil!",
-    //                         type: "success",
-    //                         icon: "success",
-    //                     }).then(function() {
-    //                         table.ajax.reload()
-    //                     })
-    //                 },
-    //                 error: function(error) {
-    //                     hideLoading();
-    //                     handleErrorAjax(error)
-    //                 },
-    //                 complete: function() {
-    //                     hideLoading();
-    //                 },
-    //             })
-    //         }
-    //     });
-    // }
+    function deletePayment(id) {
+        Swal.fire({
+            title: "Yakin untuk menghapus data?",
+            showCancelButton: true,
+            confirmButtonText: "Yes",
+            icon: "question"
+        }).then(function(result) {
+            if (result.value) {
+                $.ajax({
+                    url: `{{ url('master/payment-method/data') }}/${id}`,
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function() {
+                        showLoading();
+                    },
+                    success: (data) => {
+                        Swal.fire({
+                            title: "Berhasil!",
+                            type: "success",
+                            icon: "success",
+                        }).then(function() {
+                            table.ajax.reload()
+                        })
+                    },
+                    error: function(error) {
+                        hideLoading();
+                        handleErrorAjax(error)
+                    },
+                    complete: function() {
+                        hideLoading();
+                    },
+                })
+            }
+        });
+    }
 </script>
 @include('master.payment_method.create')
-{{-- @include('master.payment_method.edit') --}}
+@include('master.payment_method.edit')

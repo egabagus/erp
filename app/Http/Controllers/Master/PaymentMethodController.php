@@ -56,4 +56,47 @@ class PaymentMethodController extends Controller
             ], 500);
         }
     }
+
+    public function update(PaymentMethodRequest $request, $id)
+    {
+        DB::beginTransaction();
+
+        try {
+            $payment                     = PaymentMethod::find($id);
+            $payment->name               = $request->name;
+            $payment->value              = $request->value;
+            $payment->status             = $request->status;
+            $payment->save();
+
+            DB::commit();
+
+            return response()->json([
+                'data' => $payment
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'error' => $e
+            ], 500);
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            DB::commit();
+
+            $payment = PaymentMethod::find($id);
+            $payment->delete();
+
+            return response()->json([
+                'message' => 'Successfully'
+            ], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'error' => $e
+            ], 500);
+        }
+    }
 }

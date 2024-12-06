@@ -210,7 +210,6 @@
                         return `<div class="d-flex justify-content-center" style="gap: 5px;">
                             <button class="btn btn-sm btn-danger" onclick="cancel('${data}')"><i class="fas fa-trash"></i></button>
                             <button class="btn btn-sm btn-warning" onclick="cancel('${data}')"><i class="fas fa-pen"></i></button>
-                            <button class="btn btn-sm btn-success" onclick="print('${data}')"><i class="fas fa-print"></i></button>
                             </div>`
                     }
                 },

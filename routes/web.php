@@ -107,6 +107,8 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/payment-method', 'index');
             Route::post('/payment-method', 'store');
             Route::get('/payment-method/data', 'data');
+            Route::put('/payment-method/data/{id}', 'update');
+            Route::delete('/payment-method/data/{id}', 'delete');
         });
     });
 
