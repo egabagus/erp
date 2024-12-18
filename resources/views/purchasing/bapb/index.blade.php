@@ -144,7 +144,7 @@
                     name: 'bapb_no',
                     render: function(data, type, row, meta) {
                         return `<div class="d-flex justify-content-center" style="gap: 5px;">
-                                <button class="btn btn-sm btn-success" onclick="print('${data}')"><i class="fas fa-print"></i></button>
+                                <a class="btn btn-sm btn-success" href="{{ url('purchasing/receipt-of-goods') }}/${data}" target="_blank"><i class="fas fa-print"></i></a>
                                 <a class="btn btn-sm btn-warning" href="{{ env('APP_URL') }}/purchasing/bapb/edit/${data}" target="_blank"><i class="fas fa-pen"></i></a>
                                 <button class="btn btn-sm btn-danger" id="btnDelete" onclick="deleteTTB('${data}')"><i class="fas fa-trash"></i></button>
                                 </div>`

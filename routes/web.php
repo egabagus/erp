@@ -118,6 +118,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/purchase-order/create/{req_number}', 'add');
             Route::post('/purchase-order/store/', 'store');
             Route::get('/purchase-order/data', 'data');
+            Route::get('/purchase-order/edit/{ponumber}', 'edit');
             Route::post('/purchase-order/cancle-approve/{type}/{ponumber}', 'cancleApprove');
             Route::post('/purchase-order/approve/{type}/{ponumber}', 'approve');
         });
@@ -145,7 +146,10 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/request-order', 'index');
             Route::get('/request-order/data', 'data');
             Route::get('/request-order/create', 'add');
+            Route::get('/request-order/edit/{req_number}', 'edit');
+            Route::put('/request-order/update/{req_number}', 'update');
             Route::get('/request-order/show/{req_number}', 'show');
+            Route::delete('/request-order/delete/{req_number}', 'delete');
             Route::post('/request-order/store', 'store');
             Route::post('/request-order/approve/{req_number}', 'approve');
             Route::post('/request-order/cancel-approve/{req_number}', 'cancelApprove');
@@ -173,6 +177,22 @@ Route::group(['middleware' => ['auth']], function () {
             Route::controller(ModulController::class)->group(function () {
                 Route::get('/', 'index');
             });
+        });
+    });
+
+    Route::prefix('report')->group(function () {
+        Route::controller(TransactionHistoryController::class)->group(function () {
+            Route::get('/marketing', 'index');
+            Route::get('/history-transaction/data', 'data');
+        });
+
+        Route::controller(TransactionController::class)->group(function () {
+            Route::get('/transaction', 'index');
+            Route::post('/transaction', 'store');
+        });
+
+        Route::controller(ProformaInvoiceController::class)->group(function () {
+            Route::get('/proforma-invoice', 'index');
         });
     });
 });

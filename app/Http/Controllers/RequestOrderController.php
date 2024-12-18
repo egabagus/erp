@@ -9,6 +9,7 @@ use App\Services\PdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 use Yajra\DataTables\Facades\DataTables;
 
 class RequestOrderController extends Controller
@@ -58,7 +59,6 @@ class RequestOrderController extends Controller
     public function store(Request $request)
     {
         DB::beginTransaction();
-
         try {
             $req = new HeaderRequestOrder();
             $req->req_number        = CreateItemNumber::generateRequestNumber();
@@ -144,6 +144,61 @@ class RequestOrderController extends Controller
             return response()->json([
                 'status' => 'error',
                 'error' => $e
+            ], 500);
+        }
+    }
+
+    public function edit($req_number)
+    {
+        $data = HeaderRequestOrder::with('detail.product')->where('req_number', $req_number)->first();
+        return view('production.request-order.edit', compact('data'));
+    }
+
+    public function update(Request $request, $req_number)
+    {
+        DB::beginTransaction();
+        try {
+            $req                    = HeaderRequestOrder::where('req_number', $req_number)->first();
+            $req->req_by            = $request->req_by;
+            $req->date              = $request->date;
+            $req->due_date          = $request->due_date;
+            $req->note              = $request->note;
+            $req->save();
+
+            DetailRequestOrder::where('req_number', $req->req_number)->delete();
+            self::storeDetail($request, $req->req_number);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Successfully'
+            ], 201);
+        } catch (Throwable $th) {
+            DB::rollback();
+            return response()->json([
+                'error' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    public function delete($req_number)
+    {
+        DB::beginTransaction();
+        try {
+            $req = HeaderRequestOrder::where('req_number', $req_number)->first();
+            $req->delete();
+
+            DetailRequestOrder::where('req_number', $req_number)->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Successfully'
+            ], 201);
+        } catch (Throwable $th) {
+            DB::rollback();
+            return response()->json([
+                'error' => $th->getMessage()
             ], 500);
         }
     }

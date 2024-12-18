@@ -10,6 +10,7 @@ use App\Models\HeaderPO;
 use App\Models\HeaderRequestOrder;
 use App\Models\User;
 use App\Services\CreateItemNumber;
+use App\Services\Pdf\ReceiptOfGoods;
 use App\Services\PdfService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -99,6 +100,12 @@ class PurchaseOrderController extends Controller
             $detail->total           = $request->input('total')[$key];
             $detail->save();
         }
+    }
+
+    public function edit($ponumber)
+    {
+        $data = HeaderPO::with('detail.product')->where('po_number', $ponumber)->first();
+        return view('purchasing.purchase-order.edit', compact('data', 'ponumber'));
     }
 
     public function cancleApprove($type, $ponumber)
@@ -307,5 +314,10 @@ class PurchaseOrderController extends Controller
         $pdf->setDocumentTitle('Judul PDF Anda');
 
         return $pdf->outputPdf('document.pdf');
+    }
+
+    public function receiptOfGoods($receipt_num)
+    {
+        return ReceiptOfGoods::generate($receipt_num);
     }
 }

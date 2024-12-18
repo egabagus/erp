@@ -59,7 +59,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="table-responsive">
+                        <div style="display: block; overflow-x: scroll; white-space: nowrap;">
                             <table class="table table-bordered" width="100%" cellspacing="0" id="poTable">
                                 <thead class="bg-primary text-white text-uppercase">
                                     <tr>
@@ -323,7 +323,7 @@
                     name: 'po_number',
                     render: function(data, type, row, meta) {
                         var role = {{ auth()->user()->role_id }}
-                        // console.log(data)
+                        // console.log(role)
                         if (role == 6) {
                             if (row.app_operational === 0) {
                                 return `<div class="d-flex justify-content-center" style="gap: 5px;">
@@ -355,6 +355,7 @@
                         } else {
                             return `<div class="d-flex justify-content-center" style="gap: 5px;">
                                     <a class="btn btn-sm btn-success" href="${`{{ url('purchasing/purchase-order/print-pdf') }}/${data}`}" target="_blank"><i class="fas fa-print"></i></a>
+                                    <a class="btn btn-sm btn-warning" href="${`{{ url('purchasing/purchase-order/edit') }}/${data}`}" target="_blank"><i class="fas fa-pen"></i></a>
                                     </div>`
                         }
                     }

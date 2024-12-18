@@ -92,22 +92,6 @@
             order: [
                 [1, 'asc']
             ],
-            drawCallback: function(settings) {
-                $('table#requestTable tr').on('click', '#btnEditVendor', function(e) {
-                    e.preventDefault();
-
-                    let data = requestTable.row($(this).parents('tr')).data()
-
-                    editSupplier(data)
-                });
-                $('table#requestTable tr').on('click', '#btnDeleteVendor', function(e) {
-                    e.preventDefault();
-
-                    let data = requestTable.row($(this).parents('tr')).data()
-
-                    deleteSupplier(data.id)
-                });
-            },
             columns: [{
                     orderable: false,
                     searchable: false,
@@ -172,8 +156,8 @@
                             return `<div class="d-flex justify-content-center" style="gap: 5px;">
                                 <button class="btn btn-sm btn-primary" onclick="approve('${row.req_number}')"><i class="fas fa-check-circle"></i></button>
                                 <button class="btn btn-sm btn-success" onclick="print('${row.req_number}')"><i class="fas fa-print"></i></button>
-                                <button class="btn btn-sm btn-warning" id="btnEditVendor"><i class="fas fa-pen"></i></button>
-                                <button class="btn btn-sm btn-danger" id="btnDeleteVendor"><i class="fas fa-trash"></i></button>
+                                <a class="btn btn-sm btn-warning" href="{{ env('APP_URL') }}production/request-order/edit/${row.req_number}"><i class="fas fa-pen"></i></a>
+                                <button class="btn btn-sm btn-danger" onclick="deleteRequest('${row.req_number}')"><i class="fas fa-trash"></i></button>
                                 </div>`
                         } else if (row.app_manager == 1) {
                             return `<div class="d-flex justify-content-center" style="gap: 5px;">
@@ -187,17 +171,17 @@
         });
     }
 
-    function deleteSupplier(id) {
+    function deleteRequest(req_number) {
         Swal.fire({
-            title: "Yakin untuk menghapus data vendor?",
+            title: "Yakin untuk menghapus data?",
             showCancelButton: true,
             confirmButtonText: "Yes",
             icon: "question"
         }).then(function(result) {
             if (result.value) {
                 $.ajax({
-                    url: `{{ url('master/supplier/delete') }}/${id}`,
-                    method: 'POST',
+                    url: `{{ url('production/request-order/delete') }}/${req_number}`,
+                    method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                     },
@@ -212,7 +196,7 @@
                             type: "success",
                             icon: "success",
                         }).then(function() {
-                            supplierTable.ajax.reload()
+                            requestTable.ajax.reload()
                         })
                     },
                     error: function(error) {

@@ -2,7 +2,7 @@
 
     <x-slot name="header">
         <h5 class="font-weight-bold text-xl text-gray-800 leading-tight">
-            {{ __('Create Request Order') }}
+            {{ __('Edit Request Order') }}
         </h5>
     </x-slot>
 
@@ -12,7 +12,7 @@
             <li class="breadcrumb-item"><a href="#">Home</a></li>
             <li class="breadcrumb-item"><a href="#">Production</a></li>
             <li class="breadcrumb-item"><a href="#">Request Order</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Create</li>
+            <li class="breadcrumb-item active" aria-current="page">Edit</li>
         </ol>
     </nav>
 
@@ -21,30 +21,33 @@
             <div class="col-md-12">
                 <div class="card mt-3">
                     <div class="card-body">
-                        <form id="formAddRequest">
+                        <form id="formEditRequest">
                             @csrf
+                            @method('PUT')
+                            {{-- @dd($data->date) --}}
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">
                                             Request Date</label>
                                         <input type="date" name="date" class="form-control col-md-9"
-                                            value="<?= date('Y-m-d') ?>" />
+                                            value="{{ \Carbon\Carbon::parse($data->date)->format('Y-m-d') }}" />
                                     </div>
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">Due Date</label>
-                                        <input type="date" name="due_date" class="form-control col-md-9" />
+                                        <input type="date" name="due_date" class="form-control col-md-9"
+                                            value="{{ \Carbon\Carbon::parse($data->due_date)->format('Y-m-d') }}" />
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 mandatory col-form-label">Req By</label>
-                                        <input type="text" name="req_by" value="{{ Auth::user()->email }}"
+                                        <input type="text" name="req_by" value="{{ $data->req_by }}"
                                             class="form-control col-md-9" readonly />
                                     </div>
                                     <div class="mb-3 row">
                                         <label for="" class="col-md-3 col-form-label">Note</label>
-                                        <textarea name="note" id="" rows="3" class="form-control col-md-9"></textarea>
+                                        <textarea name="note" id="" rows="3" class="form-control col-md-9">{{ $data->note }}</textarea>
                                     </div>
                                 </div>
                             </div>
@@ -59,6 +62,28 @@
                                         </tr>
                                     </thead>
                                     <tbody id="itemRequestList">
+                                        @foreach ($data->detail as $key => $detail)
+                                            <tr id="item_row_{{ $key }}">
+                                                <td>
+                                                    <button class="btn btn-md btn-danger"
+                                                        onclick="deleteRow({{ $key }})" type="button">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                                <td>
+                                                    <select name="item_code[]" class="form-control item_code">
+                                                        <option value="{{ $detail->product->kode_barang }}">
+                                                            {{ $detail->product->kode_barang . ' | ' . $detail->product->nama_barang }}
+                                                        </option>
+                                                        <!-- Tambahkan opsi lain jika diperlukan -->
+                                                    </select>
+                                                </td>
+                                                <td>
+                                                    <input type="number" name="qty[]" id="qty_{{ $key }}"
+                                                        class="form-control" value="{{ $detail->qty }}">
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
@@ -69,7 +94,7 @@
                     </div>
                     <div class="card-footer d-flex flex-row-reverse">
                         <button class="btn btn-md btn-primary" style="margin-left: 10px;"
-                            onclick="save()">Submit</button>
+                            onclick="update()">Submit</button>
                         <button class="btn btn-md btn-secondary">Kembali</button>
                     </div>
                 </div>
@@ -80,7 +105,8 @@
 </x-app-layout>
 
 <script>
-    var itemRow = 0
+    var itemRow = {{ count($data->detail) }};
+    let req_number = window.location.pathname.split('/').pop();
 
     function addRow() {
         $('#itemRequestList').append(
@@ -132,12 +158,12 @@
         });
     }
 
-    function save() {
-        var form = document.getElementById('formAddRequest')
+    function update() {
+        var form = document.getElementById('formEditRequest')
         var formData = new FormData(form)
 
         $.ajax({
-            url: `{{ url('production/request-order/store') }}`,
+            url: `{{ url('production/request-order/update') }}/${req_number}`,
             data: formData,
             method: 'POST',
             processData: false,
@@ -151,6 +177,8 @@
                     title: "Berhasil!",
                     type: "success",
                     icon: "success",
+                }).then(function() {
+                    window.location.href = "{{ url('production/request-order') }}"
                 })
             },
             error: function(error) {
